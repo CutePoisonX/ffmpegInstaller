@@ -10,7 +10,7 @@ ret_cond=-1
 endScript ()
 {
     if [ $ret_cond == 1 ]; then # reverting preparation...
-    	echo "reverting perparation-changes..."
+    	echo "reverting preparation ..."
         mv "$TMP_CPX"/opt/lib/libx264.* /opt/lib/                   > /dev/null 2>&1
         mv "$TMP_CPX"/lib/libx264.* /lib/                           > /dev/null 2>&1
         mv "$TMP_CPX"/usr/lib/libx264.* /usr/lib/                   > /dev/null 2>&1
@@ -355,7 +355,7 @@ if [ "$ret_cond" == "1" ]; then
 
     echo "THE SCRIPT RUNS AUTOMATED NOW. YOU CAN RELAX AND LEAN BACK. THIS WILL TAKE A LONG TIME (PROBABLY SEVERAL HOURS)..."
     read -sn 1 -p "Press any key to start ... "
-	echo ""
+    echo ""
 	
     #preparation done!
     if [ $X264_VAR == 1 ]; then
@@ -423,7 +423,13 @@ if [ "$ret_cond" == "2" ]; then
 	cp /opt/lib/libx264.so.* /lib > /dev/null 2>&1
 	
 	echo "Done"
-    ret_cond=3
+
+    if [ $LIBF_VAR == 1 ]; then
+        ret_cond=3
+    else
+        ret_cond=4
+    fi
+
     echo $ret_cond > "$TMP_CPX"/condition
     echo $CONF_VAR >> "$TMP_CPX"/condition
     echo $X264_VAR >> "$TMP_CPX"/condition
