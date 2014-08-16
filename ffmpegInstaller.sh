@@ -63,7 +63,7 @@ endScript ()
     	echo "Exit without errors ... the installation should have succeeded."
     	
     	input="x"
-		while [ "$input" == "n" ]; do
+		while [ "$input" != "n" ]; do
 
     		echo "Do you wish to remove the source-directory (\"/volume1/tmp_ffmpeg_install/\")? [y/n]"
     		read input
@@ -545,5 +545,8 @@ if [ "$ret_cond" == "4" ]; then
         exit 1
     fi
 fi
+
+rm "$TMP_CPX"/condition > /dev/null 2>&1
 ret_cond=0
+
 exit 0
