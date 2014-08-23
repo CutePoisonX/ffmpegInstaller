@@ -256,6 +256,7 @@ if [ "$ret_cond" == "1" ]; then
     echo "installing necessary ipkg packages ..."
     ipkg update 					> /dev/null 2>&1
     ipkg install optware-devel		> /dev/null 2>&1
+    ipkg install gcc                > /dev/null 2>&1
     ipkg install git				> /dev/null 2>&1
     echo "Done"
 
