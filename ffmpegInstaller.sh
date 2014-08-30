@@ -89,7 +89,7 @@ trap endScript EXIT
 TMP_CPX=/volume1/tmp_ffmpeg_install/tmp
 SRC_CPX=/volume1/tmp_ffmpeg_install/source
 
-CONF_VAR="--disable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
+CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
 X264_VAR=1
 LIBF_VAR=1
     
