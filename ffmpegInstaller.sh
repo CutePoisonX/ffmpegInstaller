@@ -419,10 +419,6 @@ if [ "$ret_cond" == "2" ]; then
 		echo "Can not continue"
 		exit 1
 	fi
-	
-	#coping library to /lib
-	cp /opt/lib/libx264.so.* /lib > /dev/null 2>&1
-	
 	echo "Done"
 
     if [ $LIBF_VAR == 1 ]; then
@@ -545,6 +541,27 @@ if [ "$ret_cond" == "4" ]; then
         echo "Can not continue"
         exit 1
     fi
+
+    #copying necessary libraries:
+    ret_cond=5
+    while true; do
+        ffmpeg_resp=$(ffmpeg 2>&1 > /dev/null)
+
+        miss_lib_txt=$(echo "$ffmpeg_resp" | grep "error while loading shared libraries")
+        if [ $? != 0 ]; then
+            #no missing libraries
+            break
+        else
+            lib=$(echo "$miss_lib_txt" | sed 's/.*libraries: //' | sed 's/:.*//')
+
+            #trying to copy the missing shared libraries
+            cp /opt/lib/"$lib" /lib/
+            if [ $? != 0 ]; then
+                echo "Could not copy ""$lib"" to /lib. Can not continue. Note: ffmpeg is installed successfully but can not start. Maybe you try to locate the shared library yourself and copy it to /lib."
+                exit 1
+            fi
+        fi
+    done
 fi
 
 rm "$TMP_CPX"/condition > /dev/null 2>&1
