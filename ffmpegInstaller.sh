@@ -489,6 +489,7 @@ assignSpecificVars ()
         LIBF_CONF_VAR="--prefix=/opt --enable-shared"
         FFMPEG_CONF_VAR="--arch=powerpc --target-os=linux --enable-optimizations --enable-shared --disable-ffserver --disable-ffplay --enable-gpl --prefix=/opt"
         echo "Detected cpu: Freescale PowerPC"
+        found_config=1
     fi
     if [ "$1" == 8 ]; then
         LIBDL_DIR="i686-linux-gnu"
