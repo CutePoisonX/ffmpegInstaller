@@ -455,11 +455,15 @@ assignSpecificVars ()
 
     local found_config=0
 
+    if [ "$1" == 1 ]; then
+        echo "Detected cpu: ARM"
+    fi
     if [ "$1" == 2 ]; then
         LIBDL_DIR="arm-none-linux-gnueabi"
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
+        echo "Detected cpu: Marvell Feroceon ARMv5TE compliant"
         found_config=1
     fi
     if [ "$1" == 3 ]; then
@@ -467,22 +471,39 @@ assignSpecificVars ()
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
+        echo "Detected cpu: Marvell Feroceon ARMv5TE compliant"
         found_config=1
+    fi
+    if [ "$1" == 4 ]; then
+        echo "Detected cpu: Marvell ARMADA ARMv7"
+    fi
+    if [ "$1" == 5 ]; then
+        echo "Detected cpu: Mindspeed Comcerto 2000 ARMv7"
+    fi
+    if [ "$1" == 6 ]; then
+        echo "Detected cpu: Freescale PowerPC"
+    fi
+    if [ "$1" == 7 ]; then
+        echo "Detected cpu: Freescale PowerPC"
     fi
     if [ "$1" == 8 ]; then
         LIBDL_DIR="i686-linux-gnu"
         X264_CONF_VAR="--prefix=/opt --enable-shared --host=i686-linux"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared"
         FFMPEG_CONF_VAR="--arch=i686 --target-os=linux --enable-optimizations --disable-altivec --enable-pic --enable-shared --disable-swscale-alpha --disable-ffserver --disable-ffplay --enable-nonfree --enable-version3 --enable-gpl --disable-doc --prefix=/opt"
+        echo "Detected cpu: Intel Atom"
         found_config=1
+    fi
+    if [ "$1" == 9 ]; then
+        echo "Detected cpu: Intel Core i3"
     fi
 
     if [ "$found_config" == "1" ]; then
-        echo "Detected a viable configuration for your DiskStation."
+        echo "Found a viable configuration for your DiskStation."
     else
-        echo "Did not found a viable configuration for the specified DS model. Maybe your model is not supported yet."
+        echo "Did not find a viable configuration for the specified DS model. Maybe your model is not supported yet."
         echo "Cannot continue ..."
-        echo "Please contact me in this thread: http://forum.synology.com/enu/viewtopic.php?f=37&t=64609, on github: https://github.com/CutePoisonX/ffmpegInstaller or write me a mail: CutePoisonXI@gmail.com if you want that your DS is supported in this script."
+        echo "Please contact me in this thread: http://forum.synology.com/enu/viewtopic.php?f=37&t=64609, on github: https://github.com/CutePoisonX/ffmpegInstaller or send a mail to CutePoisonXI@gmail.com if you want your DS to be supported by this script."
         exit 1
     fi
 }
