@@ -5,11 +5,11 @@
 #
 #  Created by CutePoisonX
 #
-ret_cond=-1
+RET_COND=-1
 
 endScript ()
 {
-    if [ $ret_cond == 1 ]; then # reverting preparation...
+    if [ $RET_COND == 1 ]; then # reverting preparation...
     	echo "reverting preparation ..."
         mv "$TMP_CPX"/opt/lib/libx264.* /opt/lib/                   > /dev/null 2>&1
         mv "$TMP_CPX"/lib/libx264.* /lib/                           > /dev/null 2>&1
@@ -17,13 +17,13 @@ endScript ()
         mv "$TMP_CPX"/opt/include/x264* /opt/include/               > /dev/null 2>&1
         mv "$TMP_CPX"/usr/local/include/x264* /usr/local/include/   > /dev/null 2>&1
 
-        unlink /opt/arm-none-linux-gnueabi/lib/libdl.so             > /dev/null 2>&1
-        unlink /opt/arm-none-linux-gnueabi/lib/libdl.so.2           > /dev/null 2>&1
-        mv "$TMP_CPX"/libdl.so /opt/arm-none-linux-gnueabi/lib/     > /dev/null 2>&1
-        mv "$TMP_CPX"/libdl.so.2 /opt/arm-none-linux-gnueabi/lib/   > /dev/null 2>&1
+        unlink /opt/"$LIBDL_DIR"/lib/libdl.so             > /dev/null 2>&1
+        unlink /opt/"$LIBDL_DIR"/lib/libdl.so.2           > /dev/null 2>&1
+        mv "$TMP_CPX"/libdl.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
+        mv "$TMP_CPX"/libdl.so.2 /opt/"$LIBDL_DIR"/lib/   > /dev/null 2>&1
     fi
     
-    if [ $ret_cond == 2 ]; then # reverting x264 installation
+    if [ $RET_COND == 2 ]; then # reverting x264 installation
     	if [ $X264_VAR == 1 ]; then
             echo "reverting x264 installation..."
     		cd "$SRC_CPX"/x264/			> /dev/null 2>&1
@@ -34,7 +34,7 @@ endScript ()
     	fi
     fi
     
-    if [ $ret_cond == 3 ]; then # reverting libfaac installation
+    if [ $RET_COND == 3 ]; then # reverting libfaac installation
     	if [ $LIBF_VAR == 1 ]; then
             echo "reverting libfaac installation..."
   			cd "$SRC_CPX"/				> /dev/null 2>&1
@@ -46,7 +46,7 @@ endScript ()
             rm -r faac-1.28				> /dev/null 2>&1
     	fi
     fi
-    if [ $ret_cond == 4 ]; then # reverting ffmpeg installation
+    if [ $RET_COND == 4 ]; then # reverting ffmpeg installation
         echo "reverting ffmpeg installation..."
     	cd "$SRC_CPX"/ffmpeg	> /dev/null 2>&1
     	make uninstall			> /dev/null 2>&1
@@ -55,11 +55,11 @@ endScript ()
     	rm -r ffmpeg			> /dev/null 2>&1
     fi
     
-    if [ $ret_cond -ge 1 -a $disp_error == 1 ]; then 
+    if [ $RET_COND -ge 1 -a $disp_error == 1 ]; then 
         echo "(Exiting with error)"
     	echo "If you think there was a bug in the script please report to http://forum.synology.com/enu/viewtopic.php?f=37&t=64609"
 		echo "or to CutePoisonXI@gmail.com"
-    elif [ $ret_cond == 0 ]; then
+    elif [ $RET_COND == 0 ]; then
     	echo "Exit without errors ... the installation should have succeeded."
     	
     	input="x"
@@ -85,54 +85,495 @@ endScript ()
 }
 trap endScript EXIT
 
+translateDSModelToProcessor ()
+{
+    #aks for the model and returns a number, depending on which processor is used in the DS
+    #
+    # ARM familiy:
+    # 1: ARM (armv5b)
+    # 2: Marvell Feroceon ARMv5TE compliant (armv5tejl)
+    # 3: Marvell Kirkwood ARMv5TE compliant (Feroceon family)
+    # 4: Marvell ARMADA ARMv7
+    # 5: Mindspeed Comcerto 2000 ARMv7
+    #
+    # PowerPC family:
+    # 6: Freescale PowerPC (ppc_6xx)
+    # 7: Freescale PowerPC (e500v*)
+    #
+    # Intel family:
+    # 8: Intel Atom
+    # 9: Intel Core i3
+
+    echo "Please enter the model of your Synology DiskStation (like e.g. DS213, DS211+, CS407e, etc...)"
+    local input=""
+    local cpu_var=""
+
+    while true; do
+        read input
+
+        # 1:
+        if [ "$input" == "DS101" ]; then
+            cpu_var=1
+        fi
+        if [ "$input" == "DS101j" ]; then
+            cpu_var=1
+        fi
+
+        # 2:
+        if [ "$input" == "DS107+" ]; then
+            cpu_var=2
+        fi
+        if [ "$input" == "DS207+" ]; then
+            cpu_var=2
+        fi
+        if [ "$input" == "CS407" ]; then
+            cpu_var=2
+        fi
+        if [ "$input" == "RS407" ]; then
+            cpu_var=2
+        fi
+
+        # 3:
+        if [ "$input" == "DS109" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS110j" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS112j" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS209" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS210j" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS211j" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS212j" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS409" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS409slim" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS410j" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS411j" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "RS409" ]; then
+            cpu_var=3
+        fi
+
+        if [ "$input" == "DS111" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS112" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS211" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS211+" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS212" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS213air" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS411slim" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS413j" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "RS212" ]; then
+            cpu_var=3
+        fi
+
+        if [ "$input" == "DS112+" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS212+" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS213" ]; then
+            cpu_var=3
+        fi
+        if [ "$input" == "DS411" ]; then
+            cpu_var=3
+        fi
+
+        # 4:
+        if [ "$input" == "DS114" ]; then
+            cpu_var=4
+        fi
+        if [ "$input" == "DS213j" ]; then
+            cpu_var=4
+        fi
+        if [ "$input" == "DS214se" ]; then
+            cpu_var=4
+        fi
+        if [ "$input" == "DS414slim" ]; then
+            cpu_var=4
+        fi
+        if [ "$input" == "EDS14" ]; then
+            cpu_var=4
+        fi
+        if [ "$input" == "RS214" ]; then
+            cpu_var=4
+        fi
+
+        if [ "$input" == "DS214" ]; then
+            cpu_var=4
+        fi
+        if [ "$input" == "DS214+" ]; then
+            cpu_var=4
+        fi
+        if [ "$input" == "DS414" ]; then
+            cpu_var=4
+        fi
+        if [ "$input" == "RS814" ]; then
+            cpu_var=4
+        fi
+
+        # 5:
+        if [ "$input" == "DS214air" ]; then
+            cpu_var=5
+        fi
+        if [ "$input" == "DS414j" ]; then
+            cpu_var=5
+        fi
+
+        # 6:
+        if [ "$input" == "DS101g+" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS106e" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS106" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS106x" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS107" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS107e" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS109j" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS207" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS207.128" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS209j" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS406e" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "CS407e" ]; then
+            cpu_var=6
+        fi
+
+        if [ "$input" == "DS106j" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "DS108j" ]; then
+            cpu_var=6
+        fi
+
+        if [ "$input" == "CS406" ]; then
+            cpu_var=6
+        fi
+        if [ "$input" == "RS406" ]; then
+            cpu_var=6
+        fi
+
+        # 7:
+        if [ "$input" == "DS109+" ]; then
+            cpu_var=7
+        fi
+        if [ "$input" == "DS209+II" ]; then
+            cpu_var=7
+        fi
+        if [ "$input" == "DS409+" ]; then
+            cpu_var=7
+        fi
+        if [ "$input" == "DS509+" ]; then
+            cpu_var=7
+        fi
+        if [ "$input" == "RS409(RP)+" ]; then
+            cpu_var=7
+        fi
+
+        if [ "$input" == "DS209+" ]; then
+            cpu_var=7
+        fi
+        if [ "$input" == "DS408" ]; then
+            cpu_var=7
+        fi
+        if [ "$input" == "DS508" ]; then
+            cpu_var=7
+        fi
+        if [ "$input" == "RS408(RP)" ]; then
+            cpu_var=7
+        fi
+
+        if [ "$input" == "DS110+" ]; then
+            cpu_var=7
+        fi
+        if [ "$input" == "DS210+" ]; then
+            cpu_var=7
+        fi
+        if [ "$input" == "DS410" ]; then
+            cpu_var=7
+        fi
+
+        if [ "$input" == "DS213+" ]; then
+            cpu_var=7
+        fi
+        if [ "$input" == "DS413" ]; then
+            cpu_var=7
+        fi
+
+        # 8:
+        if [ "$input" == "DS710+" ]; then
+            cpu_var=8
+        fi
+
+        if [ "$input" == "DS411+II" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS1010+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "RS810(RP)+" ]; then
+            cpu_var=8
+        fi
+
+        if [ "$input" == "DS411+II" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS1511+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "RS2211+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS2411+" ]; then
+            cpu_var=8
+        fi
+
+        if [ "$input" == "DS712+" ]; then
+            cpu_var=8
+        fi
+
+        if [ "$input" == "DS713+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS412+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS1512+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS1812+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS1513+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS1813+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS2413+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "RS814(RP)+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "RS2414(RP)+" ]; then
+            cpu_var=8
+        fi
+
+        if [ "$input" == "DS214play" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS415play" ]; then
+            cpu_var=8
+        fi
+
+        # 9:
+        if [ "$input" == "DS3611xs" ]; then
+            cpu_var=9
+        fi
+        if [ "$input" == "RS3411xs" ]; then
+            cpu_var=9
+        fi
+        if [ "$input" == "RS3411(RP)xs" ]; then
+            cpu_var=9
+        fi
+
+
+        if [ "$input" == "abort" ]; then
+            exit 1
+        fi
+        if [ "$cpu_var" == "" ]; then
+            echo "DS model not found. Please try again or abort by writing \"abort\"."
+        else
+            break
+        fi
+    done
+
+    return "$cpu_var"
+}
+
+assignSpecificVars ()
+{
+    #first (and only) argument is the DS-processor
+
+    LIBDL_DIR=""
+    X264_CONF_VAR=""
+    LIBF_CONF_VAR=""
+    FFMPEG_CONF_VAR=""
+
+    local found_config=0
+
+    if [ "$1" == 2 ]; then
+        LIBDL_DIR="arm-none-linux-gnueabi"
+        X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
+        LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
+        FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
+        found_config=1
+    fi
+    if [ "$1" == 3 ]; then
+        LIBDL_DIR="arm-none-linux-gnueabi"
+        X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
+        LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
+        FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
+        found_config=1
+    fi
+    if [ "$1" == 8 ]; then
+        LIBDL_DIR="i686-linux-gnu"
+        X264_CONF_VAR="--prefix=/opt --enable-shared --host=i686-linux"
+        LIBF_CONF_VAR="--prefix=/opt --enable-shared"
+        FFMPEG_CONF_VAR="--arch=i686 --target-os=linux --enable-optimizations --disable-altivec --enable-pic --enable-shared --disable-swscale-alpha --disable-ffserver --disable-ffplay --enable-nonfree --enable-version3 --enable-gpl --disable-doc --prefix=/opt"
+        found_config=1
+    fi
+
+    if [ "$found_config" == "1" ]; then
+        echo "Detected a viable configuration for your DiskStation."
+    else
+        echo "Did not found a viable configuration for the specified DS model. Maybe your model is not supported yet."
+        echo "Cannot continue ..."
+        echo "Please contact me in this thread: http://forum.synology.com/enu/viewtopic.php?f=37&t=64609, on github: https://github.com/CutePoisonX/ffmpegInstaller or write me a mail: CutePoisonXI@gmail.com if you want that your DS is supported in this script."
+        exit 1
+    fi
+}
+
+readFromConditionFile ()
+{
+    # assumes that file exists and that it is valid
+    X264_CONF_VAR=$(sed '2q;d' "$TMP_CPX"/condition)
+    LIBF_CONF_VAR=$(sed '3q;d' "$TMP_CPX"/condition)
+    FFMPEG_CONF_VAR=$(sed '4q;d' "$TMP_CPX"/condition)
+    X264_VAR=$(sed '5q;d' "$TMP_CPX"/condition)
+    LIBF_VAR=$(sed '6q;d' "$TMP_CPX"/condition)
+    LIBDL_DIR=$(sed '7q;d' "$TMP_CPX"/condition)
+}
+
+writeToConditionFile ()
+{
+    echo $RET_COND > "$TMP_CPX"/condition
+    echo $X264_CONF_VAR >> "$TMP_CPX"/condition
+    echo $LIBF_CONF_VAR >> "$TMP_CPX"/condition
+    echo $FFMPEG_CONF_VAR >> "$TMP_CPX"/condition
+    echo $X264_VAR >> "$TMP_CPX"/condition
+    echo $LIBF_VAR >> "$TMP_CPX"/condition
+    echo $LIBDL_DIR >> "$TMP_CPX"/condition
+}
+
+############################################################################################################### BODY ###############################################################################################################
+####################################################################################################################################################################################################################################
+####################################################################################################################################################################################################################################
+####################################################################################################################################################################################################################################
+
 #defining convinient variables
 TMP_CPX=/volume1/tmp_ffmpeg_install/tmp
 SRC_CPX=/volume1/tmp_ffmpeg_install/source
 
-CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
+LIBDL_DIR=""
+X264_CONF_VAR=""
+LIBF_CONF_VAR=""
+FFMPEG_CONF_VAR=""
 X264_VAR=1
 LIBF_VAR=1
     
 disp_error=0
 
-#checking the "reset-command:"
-if [ "$1" == "reset" ]; then
-	ret_cond=0
-	while [ $ret_cond -le 4 ]; do
-        ret_cond=$(($ret_cond+1))
-        endScript
-    done
-    ret_cond=-1
-    input="x"
-	while [ "$input" != "n" ]; do
-
-    	echo "Do you wish to remove the source-directory (\"/volume1/tmp_ffmpeg_install/\")? [y/n]"
-    	read input
-
-    	if [ "$input" == "y" ]; then
-    		rm -r /volume1/tmp_ffmpeg_install/ > /dev/null 2>&1
-    		if [ $? != 0 ]; then
-				echo "Could not remove directory."
-			else
-				echo "Directory removed."
-			fi
-        	break
-    	fi
-	done
-    exit 0
-fi
 # ---------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------
 
 # Present script
 clear
-echo "This is a ffmpeg install script for Synolgy DiskStations with a Marvell Kirkwood processor by CutePoisonX"
-echo "It will install x264, libfaac and ffmpeg"
+echo "This is a ffmpeg install script for Synolgy DiskStations by CutePoisonX"
+echo "It will install x264, libfaac and ffmpeg."
 echo "If you want to install other libraries (like lame e.g.), you will have to do it before you execute this script"
 echo "Note: you can also install it manually by using this tutorial: http://forum.synology.com/enu/viewtopic.php?f=37&t=64609"
-echo "Caution: Only use this script if your DiskStation has the right processor (you check check your processor here: http://forum.synology.com/wiki/index.php/What_kind_of_CPU_does_my_NAS_have)!"
 echo "Just to mention this: I'm not responsible for any harm done by this script..."
+
+######################################################################################################################################
+#checking the "reset-command:"
+if [ "$1" == "reset" ]; then
+
+    if [ -f "$TMP_CPX"/condition ]; then
+        readFromConditionFile
+        RET_COND=0
+        while [ $RET_COND -le 4 ]; do
+            RET_COND=$(($RET_COND+1))
+            endScript
+        done
+        RET_COND=-1
+        input="x"
+        while [ "$input" != "n" ]; do
+
+            echo "Do you wish to remove the source-directory (\"/volume1/tmp_ffmpeg_install/\")? [y/n]"
+            read input
+
+            if [ "$input" == "y" ]; then
+                rm -r /volume1/tmp_ffmpeg_install/ > /dev/null 2>&1
+            if [ $? != 0 ]; then
+                echo "Could not remove directory."
+            else
+                echo "Directory removed."
+            fi
+                break
+            fi
+        done
+        exit 0
+    else
+        echo "Could not find condition-file to reset session (cannot reset)..."
+        exit 0
+    fi
+fi
+######################################################################################################################################
 
 input="n"
 while [ "$input" != "y" ]; do
@@ -145,11 +586,12 @@ while [ "$input" != "y" ]; do
     fi
 done
 
+######################################################################################################################################
 #checking resume condition if condition file exists:
 if [ -f "$TMP_CPX"/condition ]; then
-	ret_cond=$(sed '1q;d' "$TMP_CPX"/condition)
+	RET_COND=$(sed '1q;d' "$TMP_CPX"/condition)
 
-	if [  "$ret_cond" != "" -a "$ret_cond" != "1" ]; then
+	if [  "$RET_COND" != "" -a "$RET_COND" != "1" ]; then
 		input="x"
 		while true; do
 
@@ -157,26 +599,40 @@ if [ -f "$TMP_CPX"/condition ]; then
     		read input
 
 		 	if [ "$input" == "y" ]; then
-		 		CONF_VAR=$(sed '2q;d' "$TMP_CPX"/condition)
-		 		X264_VAR=$(sed '3q;d' "$TMP_CPX"/condition)
-		 		LIBF_VAR=$(sed '4q;d' "$TMP_CPX"/condition)
+		 		readFromConditionFile
                 break
             elif [ "$input" == "n" ]; then
-                while [ $ret_cond -le 4 ]; do
-                    ret_cond=$(($ret_cond+1))
+                while [ $RET_COND -le 4 ]; do
+                    RET_COND=$(($RET_COND+1))
                     endScript
                 done
-                ret_cond=1
+                    translateDSModelToProcessor
+                    assignSpecificVars "$?"
+                    RET_COND=1
                 break
 		 	fi
 		done
+    else
+        translateDSModelToProcessor
+        assignSpecificVars "$?"
+        RET_COND=1
 	fi
 else
-	ret_cond=1
+    translateDSModelToProcessor
+    assignSpecificVars "$?"
+	RET_COND=1
+fi
+######################################################################################################################################
+
+if [ "$FFMPEG_CONF_VAR" == "" -o "$LIBDL_DIR" == "" ]; then
+    echo "Did not found a viable configuration for the specified DS model. Maybe your model is not supported yet."
+    echo "Cannot continue ..."
+    echo "Please contact me in this thread: http://forum.synology.com/enu/viewtopic.php?f=37&t=64609, on github: https://github.com/CutePoisonX/ffmpegInstaller or write me a mail: CutePoisonXI@gmail.com if you want that your DS is supported in this script."
+    exit 1
 fi
 
 disp_error=1
-if [ "$ret_cond" == "1" ]; then
+if [ "$RET_COND" == "1" ]; then
 
     # ------------------------------create directories for installation --------------------------------------------------------------
     echo "Creating necessary directories ..."
@@ -232,7 +688,7 @@ if [ "$ret_cond" == "1" ]; then
     fi
     echo "Done"
     # ---------------------------------------------------------------------------------------------------------------------------------
-    echo $ret_cond > "$TMP_CPX"/condition
+    echo $RET_COND > "$TMP_CPX"/condition
     
     #removing previous logfiles
     rm "$TMP_CPX"/x264.log 		> /dev/null 2>&1
@@ -288,10 +744,10 @@ if [ "$ret_cond" == "1" ]; then
         elif [ "$input" == "y" ]; then
             #fixing DSM 5 lib issue
             echo "Fixing DSM 5 library issue"
-            mv /opt/arm-none-linux-gnueabi/lib/libdl.so "$TMP_CPX"/             > /dev/null 2>&1
-            mv /opt/arm-none-linux-gnueabi/lib/libdl.so.2 "$TMP_CPX"/           > /dev/null 2>&1
-            ln -s /lib/libdl.so.2 /opt/arm-none-linux-gnueabi/lib/libdl.so      > /dev/null 2>&1
-            ln -s /lib/libdl.so.2 /opt/arm-none-linux-gnueabi/lib/libdl.so.2    > /dev/null 2>&1
+            mv /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/             > /dev/null 2>&1
+            mv /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/           > /dev/null 2>&1
+            ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so      > /dev/null 2>&1
+            ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2    > /dev/null 2>&1
             echo "Done"
             # assuming this runs without errors....
             break
@@ -311,7 +767,7 @@ if [ "$ret_cond" == "1" ]; then
         elif [ "$input" == "y" ]; then
             X264_VAR=1
             echo "x264 WILL BE installed"
-            CONF_VAR="$CONF_VAR"" --enable-libx264"
+            FFMPEG_CONF_VAR="$FFMPEG_CONF_VAR"" --enable-libx264"
             break
         fi
     done
@@ -328,7 +784,7 @@ if [ "$ret_cond" == "1" ]; then
         elif [ "$input" == "y" ]; then
             LIBF_VAR=1
             echo "libfaac WILL BE installed"
-            CONF_VAR="$CONF_VAR"" --enable-libfaac"
+            FFMPEG_CONF_VAR="$FFMPEG_CONF_VAR"" --enable-libfaac"
             break
         fi
     done
@@ -336,7 +792,7 @@ if [ "$ret_cond" == "1" ]; then
     echo ""
     echo "The ffmpeg configuration is now:"
 
-    echo "$CONF_VAR"
+    echo "$FFMPEG_CONF_VAR"
     echo ""
 
     input="x"
@@ -349,7 +805,7 @@ if [ "$ret_cond" == "1" ]; then
             break
         elif [ "$input" == "y" ]; then
             echo "Please enter your configuration:"
-            read CONF_VAR
+            read FFMPEG_CONF_VAR
             break
         fi
     done
@@ -360,24 +816,21 @@ if [ "$ret_cond" == "1" ]; then
 	
     #preparation done!
     if [ $X264_VAR == 1 ]; then
-        ret_cond=2
+        RET_COND=2
     else
         if [ $LIBF_VAR == 1 ]; then
-            ret_cond=3
+            RET_COND=3
         else
-            ret_cond=4
+            RET_COND=4
         fi
     fi
 
-    echo $ret_cond > "$TMP_CPX"/condition
-    echo $CONF_VAR >> "$TMP_CPX"/condition
-    echo $X264_VAR >> "$TMP_CPX"/condition
-    echo $LIBF_VAR >> "$TMP_CPX"/condition
+    writeToConditionFile
 fi
 # ---------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------
-if [ "$ret_cond" == "2" ]; then
+if [ "$RET_COND" == "2" ]; then
 	cd "$SRC_CPX"
 	#installing x264
 
@@ -398,7 +851,7 @@ if [ "$ret_cond" == "2" ]; then
 	fi
 
 	echo "Configuring x264 ..."
-	sh configure --prefix=/opt --enable-shared --disable-asm >> "$TMP_CPX"/x264.log 2>&1
+	sh configure $X264_CONF_VAR >> "$TMP_CPX"/x264.log 2>&1
 	if [ $? != 0 ]; then
 		echo "Configuring x264 failed ..."
 		echo "Can not continue"
@@ -422,18 +875,15 @@ if [ "$ret_cond" == "2" ]; then
 	echo "Done"
 
     if [ $LIBF_VAR == 1 ]; then
-        ret_cond=3
+        RET_COND=3
     else
-        ret_cond=4
+        RET_COND=4
     fi
 
-    echo $ret_cond > "$TMP_CPX"/condition
-    echo $CONF_VAR >> "$TMP_CPX"/condition
-    echo $X264_VAR >> "$TMP_CPX"/condition
-    echo $LIBF_VAR >> "$TMP_CPX"/condition
+    writeToConditionFile
 fi
 
-if [ "$ret_cond" == "3" ]; then
+if [ "$RET_COND" == "3" ]; then
 	cd "$SRC_CPX"
 	#installing libfaac
 
@@ -462,7 +912,7 @@ if [ "$ret_cond" == "3" ]; then
 	fi
 
 	echo "configuring libfaac ..."
-	sh configure --prefix=/opt --enable-shared --disable-asm >> "$TMP_CPX"/libfaac.log 2>&1
+	sh configure $LIBF_CONF_VAR >> "$TMP_CPX"/libfaac.log 2>&1
 	if [ $? != 0 ]; then
 		echo "Configuring libfaac failed ..."
 		echo "Can not continue"
@@ -486,18 +936,15 @@ if [ "$ret_cond" == "3" ]; then
 	fi
 
 	echo "Done"
-    ret_cond=4
-    echo $ret_cond > "$TMP_CPX"/condition
-    echo $CONF_VAR >> "$TMP_CPX"/condition
-    echo $X264_VAR >> "$TMP_CPX"/condition
-    echo $LIBF_VAR >> "$TMP_CPX"/condition
+    RET_COND=4
+    writeToConditionFile
 fi
 # ---------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------
 #library installation done
 #installing ffmpeg!
-if [ "$ret_cond" == "4" ]; then
+if [ "$RET_COND" == "4" ]; then
     cd "$SRC_CPX"
 
     echo "Installing ffmpeg ..."
@@ -519,7 +966,7 @@ if [ "$ret_cond" == "4" ]; then
     fi
 
     echo "configuring ffmpeg ..."
-    ./configure $CONF_VAR >> "$TMP_CPX"/ffmpeg.log 2>&1
+    ./configure $FFMPEG_CONF_VAR >> "$TMP_CPX"/ffmpeg.log 2>&1
     if [ $? != 0 ]; then
         echo "Configuring ffmpeg failed ..."
         echo "Can not continue"
@@ -543,7 +990,7 @@ if [ "$ret_cond" == "4" ]; then
     fi
 
     #copying necessary libraries:
-    ret_cond=5
+    RET_COND=5
     while true; do
         ffmpeg_resp=$(ffmpeg 2>&1 > /dev/null)
 
@@ -555,7 +1002,7 @@ if [ "$ret_cond" == "4" ]; then
             lib=$(echo "$miss_lib_txt" | sed 's/.*libraries: //' | sed 's/:.*//')
 
             #trying to copy the missing shared libraries
-            cp /opt/lib/"$lib" /lib/
+            cp /opt/lib/"$lib" /lib/ > /dev/null 2>&1
             if [ $? != 0 ]; then
                 echo "Could not copy ""$lib"" to /lib. Can not continue. Note: ffmpeg is installed successfully but can not start. Maybe you try to locate the shared library yourself and copy it to /lib."
                 exit 1
@@ -565,6 +1012,6 @@ if [ "$ret_cond" == "4" ]; then
 fi
 
 rm "$TMP_CPX"/condition > /dev/null 2>&1
-ret_cond=0
+RET_COND=0
 
 exit 0
