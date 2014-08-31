@@ -485,7 +485,7 @@ assignSpecificVars ()
     fi
     if [ "$1" == 7 ]; then
         LIBDL_DIR="powerpc-linux-gnuspe"
-        X264_CONF_VAR="--prefix=/opt --enable-shared --arch=ppc"
+        X264_CONF_VAR="--prefix=/opt --enable-shared --arch=powerpc"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared"
         FFMPEG_CONF_VAR="--arch=powerpc --target-os=linux --enable-optimizations --enable-shared --disable-ffserver --disable-ffplay --enable-gpl --prefix=/opt"
         echo "Detected cpu: Freescale PowerPC"
