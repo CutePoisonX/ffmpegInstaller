@@ -30,7 +30,6 @@ endScript ()
     		make uninstall				> /dev/null 2>&1
     		make clean	 				> /dev/null 2>&1
     		cd ..
-    		rm -r x264					> /dev/null 2>&1
     	fi
     fi
     
@@ -43,7 +42,6 @@ endScript ()
             make uninstall				> /dev/null 2>&1
             make clean					> /dev/null 2>&1
             cd ..
-            rm -r faac-1.28				> /dev/null 2>&1
     	fi
     fi
     if [ $RET_COND == 4 ]; then # reverting ffmpeg installation
@@ -52,7 +50,6 @@ endScript ()
     	make uninstall			> /dev/null 2>&1
     	make clean				> /dev/null 2>&1		
     	cd ..
-    	rm -r ffmpeg			> /dev/null 2>&1
     fi
     
     if [ $RET_COND -ge 1 -a $disp_error == 1 ]; then 
