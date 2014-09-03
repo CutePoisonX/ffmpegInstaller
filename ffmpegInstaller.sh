@@ -1,6 +1,6 @@
 #!/opt/bin/bash
 
-#  ffmpeg installation script for Synology DiskStations with ARM Marvell Kirkwood processor
+#  ffmpeg installation script for Synology DiskStations
 #  
 #
 #  Created by CutePoisonX
@@ -21,6 +21,14 @@ endScript ()
         unlink /opt/"$LIBDL_DIR"/lib/libdl.so.2           > /dev/null 2>&1
         mv "$TMP_CPX"/libdl.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
         mv "$TMP_CPX"/libdl.so.2 /opt/"$LIBDL_DIR"/lib/   > /dev/null 2>&1
+
+        if [ $PROCESSING_YASM == 1 ]; then
+            echo "reverting yasm installation..."
+            cd "$SRC_CPX"/yasm-1.2.0/
+            make uninstall				> /dev/null 2>&1
+            make clean	 				> /dev/null 2>&1
+            echo "Refer to the logfile for further information: \"/volume1/tmp_ffmpeg_install/tmp/yasm.log\"."
+        fi
     fi
     
     if [ $RET_COND == 2 ]; then # reverting x264 installation
@@ -29,8 +37,7 @@ endScript ()
     		cd "$SRC_CPX"/x264/			> /dev/null 2>&1
     		make uninstall				> /dev/null 2>&1
     		make clean	 				> /dev/null 2>&1
-    		cd ..
-    		rm -r x264					> /dev/null 2>&1
+            echo "Refer to the logfile for further information: \"/volume1/tmp_ffmpeg_install/tmp/x264.log\"."
     	fi
     fi
     
@@ -42,17 +49,15 @@ endScript ()
             cd faac-1.28/				> /dev/null 2>&1
             make uninstall				> /dev/null 2>&1
             make clean					> /dev/null 2>&1
-            cd ..
-            rm -r faac-1.28				> /dev/null 2>&1
+            echo "Refer to the logfile for further information: \"/volume1/tmp_ffmpeg_install/tmp/libfaac.log\"."
     	fi
     fi
     if [ $RET_COND == 4 ]; then # reverting ffmpeg installation
         echo "reverting ffmpeg installation..."
     	cd "$SRC_CPX"/ffmpeg	> /dev/null 2>&1
     	make uninstall			> /dev/null 2>&1
-    	make clean				> /dev/null 2>&1		
-    	cd ..
-    	rm -r ffmpeg			> /dev/null 2>&1
+    	make clean				> /dev/null 2>&1
+        echo "Refer to the logfile for further information: \"/volume1/tmp_ffmpeg_install/tmp/ffmpeg.log\"."
     fi
     
     if [ $RET_COND -ge 1 -a $disp_error == 1 ]; then 
@@ -530,6 +535,17 @@ writeToConditionFile ()
     echo $LIBDL_DIR >> "$TMP_CPX"/condition
 }
 
+writeToConditionFileFinished ()
+{
+    echo 1 > "$TMP_CPX"/condition
+    echo $X264_CONF_VAR >> "$TMP_CPX"/condition
+    echo $LIBF_CONF_VAR >> "$TMP_CPX"/condition
+    echo $FFMPEG_CONF_VAR >> "$TMP_CPX"/condition
+    echo 1 >> "$TMP_CPX"/condition
+    echo 1 >> "$TMP_CPX"/condition
+    echo $LIBDL_DIR >> "$TMP_CPX"/condition
+}
+
 ############################################################################################################### BODY ###############################################################################################################
 ####################################################################################################################################################################################################################################
 ####################################################################################################################################################################################################################################
@@ -623,10 +639,6 @@ if [ -f "$TMP_CPX"/condition ]; then
 		 		readFromConditionFile
                 break
             elif [ "$input" == "n" ]; then
-                while [ $RET_COND -le 4 ]; do
-                    RET_COND=$(($RET_COND+1))
-                    endScript
-                done
                     translateDSModelToProcessor
                     assignSpecificVars "$?"
                     RET_COND=1
@@ -755,16 +767,69 @@ if [ "$RET_COND" == "1" ]; then
 
     # checking version ...
     input="x"
+    PROCESSING_YASM=1
     while true; do
 
         echo "Are you on DSM 5 or newer? [y/n]"
         read input
 
         if [ "$input" == "n" ]; then
+            #installing newer yasm-version
+            echo "Installing newer yasm version ..."
+            cd "$SRC_CPX"
+            ipkg remove yasm > /dev/null 2>&1
+
+            echo "downloading yasm ..."
+            echo "DOWNLOADING yasm" > "$TMP_CPX"/yasm.log 2>&1
+            wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
+            if [ $? != 0 ]; then
+                echo "Getting yasm failed ..."
+                echo "Can not continue"
+                exit 1
+            fi
+
+            echo "extracting yasm ..."
+            echo "EXTRACTING yasm" >> "$TMP_CPX"/yasm.log 2>&1
+            tar -xf yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
+            if [ $? != 0 ]; then
+                echo "Extracting yasm failed ..."
+                echo "Can not continue"
+                exit 1
+            fi
+            cd yasm-1.2.0
+
+            echo "configuring yasm ..."
+            echo "CONFIGURING yasm" >> "$TMP_CPX"/yasm.log 2>&1
+            ./configure >> "$TMP_CPX"/yasm.log 2>&1
+            if [ $? != 0 ]; then
+                echo "Configuring yasm failed ..."
+                echo "For further information why it failed refer to the file: \"/volume1/tmp_ffmpeg_install/source/yasm-1.2.0/config.log\"."
+                echo "Can not continue"
+                exit 1
+            fi
+
+            echo "\"make\" yasm ..."
+            echo "\"MAKE\" yasm ..." >> "$TMP_CPX"/yasm.log 2>&1
+            make >> "$TMP_CPX"/yasm.log 2>&1
+            if [ $? != 0 ]; then
+                echo "\"making\" yasm failed ..."
+                echo "Can not continue"
+            exit 1
+            fi
+
+            echo "\"make install\" yasm ..."
+            echo "\"MAKE INSTALL\" yasm ..." >> "$TMP_CPX"/yasm.log 2>&1
+            make install >> "$TMP_CPX"/yasm.log 2>&1
+            if [ $? != 0 ]; then
+                echo "Installing yasm failed ..."
+                echo "Can not continue"
+                exit 1
+            fi
             break
+
         elif [ "$input" == "y" ]; then
             #fixing DSM 5 lib issue
-            echo "Fixing DSM 5 library issue"
+            echo "Fixing DSM 5 library issue ..."
             mv /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/             > /dev/null 2>&1
             mv /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/           > /dev/null 2>&1
             ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so      > /dev/null 2>&1
@@ -774,6 +839,7 @@ if [ "$RET_COND" == "1" ]; then
             break
         fi
     done
+    PROCESSING_YASM=0
 
     input="x"
     while true; do
@@ -857,14 +923,15 @@ if [ "$RET_COND" == "2" ]; then
 
 	echo "Installing x264 now:"
 	echo "cloning x264 ..."
-	git clone git://git.videolan.org/x264 > /dev/null 2>&1
+    echo "CLONING x264" > "$TMP_CPX"/x264.log 2>&1
+	git clone git://git.videolan.org/x264 >> "$TMP_CPX"/x264.log 2>&1
 	if [ $? != 0 ]; then
 		echo "Git clone failed ..."
 		echo "Can not continue"
 		exit 1
 	fi
 	cd x264
-	sed -i 's/^#!.*$/#!\/opt\/bin\/bash/g' configure version.sh >> "$TMP_CPX"/x264.log 2>&1
+	sed -i 's/^#!.*$/#!\/opt\/bin\/bash/g' configure version.sh > /dev/null 2>&1
 	if [ $? != 0 ]; then
 		echo "Changing shebang to /opt/bin/bash failed ..."
 		echo "Can not continue"
@@ -872,14 +939,17 @@ if [ "$RET_COND" == "2" ]; then
 	fi
 
 	echo "Configuring x264 ..."
+    echo "CONFIGURING x264" >> "$TMP_CPX"/x264.log 2>&1
 	sh configure $X264_CONF_VAR >> "$TMP_CPX"/x264.log 2>&1
 	if [ $? != 0 ]; then
 		echo "Configuring x264 failed ..."
+        echo "For further information why it failed refer to the file: \"/volume1/tmp_ffmpeg_install/source/x264/config.log\"."
 		echo "Can not continue"
 		exit 1
 	fi
 
 	echo "\"make\" x264 ..."
+	echo "\"MAKE\" x264 ..." >> "$TMP_CPX"/x264.log 2>&1
 	make >> "$TMP_CPX"/x264.log 2>&1
 	if [ $? != 0 ]; then
 		echo "\"make\" failed ..."
@@ -887,6 +957,7 @@ if [ "$RET_COND" == "2" ]; then
 		exit 1
 	fi
 	echo "\"make install\" x264 ..."
+    echo "\"MAKE INSTALL\" x264 ..." >> "$TMP_CPX"/x264.log 2>&1
 	make install >> "$TMP_CPX"/x264.log 2>&1
 	if [ $? != 0 ]; then
 		echo "\"make install\" failed ..."
@@ -910,14 +981,16 @@ if [ "$RET_COND" == "3" ]; then
 
 	echo "Installing libfaac now:"
 	echo "downloading libfaac ..."
-	wget http://downloads.sourceforge.net/faac/faac-1.28.tar.gz	> /dev/null 2>&1
+    echo "DOWNLOADING libfaac" > "$TMP_CPX"/libfaac.log 2>&1
+	wget http://downloads.sourceforge.net/faac/faac-1.28.tar.gz >> "$TMP_CPX"/libfaac.log 2>&1
 	if [ $? != 0 ]; then
 		echo "Could not download libfaac ..."
 		echo "Can not continue"
 		exit 1
 	fi
 	echo "extracting libfaac ..."
-	tar xfv faac-1.28.tar.gz	> /dev/null 2>&1
+    echo "EXTRACTING libfaac" >> "$TMP_CPX"/libfaac.log 2>&1
+	tar -xf faac-1.28.tar.gz >> "$TMP_CPX"/libfaac.log 2>&1
 	if [ $? != 0 ]; then
 		echo "Could not extract libfaac ..."
 		echo "Can not continue"
@@ -933,14 +1006,17 @@ if [ "$RET_COND" == "3" ]; then
 	fi
 
 	echo "configuring libfaac ..."
+    echo "CONFIGURING libfaac" >> "$TMP_CPX"/libfaac.log 2>&1
 	sh configure $LIBF_CONF_VAR >> "$TMP_CPX"/libfaac.log 2>&1
 	if [ $? != 0 ]; then
 		echo "Configuring libfaac failed ..."
+        echo "For further information why it failed refer to the file: \"/volume1/tmp_ffmpeg_install/source/faac-1.28/config.log\"."
 		echo "Can not continue"
 		exit 1
 	fi
 
 	echo "\"make\" libfaac ..."
+	echo "\"MAKE\" libfaac ..." >> "$TMP_CPX"/libfaac.log 2>&1
 	make >> "$TMP_CPX"/libfaac.log 2>&1
 	if [ $? != 0 ]; then
 		echo "\"make\" failed ..."
@@ -949,6 +1025,7 @@ if [ "$RET_COND" == "3" ]; then
 	fi
 	
 	echo "\"make install\" libfaac ..."
+    echo "\"MAKE INSTALL\" libfaac ..." >> "$TMP_CPX"/libfaac.log 2>&1
 	make install >> "$TMP_CPX"/libfaac.log 2>&1
 	if [ $? != 0 ]; then
 		echo "\"make install\" failed ..."
@@ -970,7 +1047,8 @@ if [ "$RET_COND" == "4" ]; then
 
     echo "Installing ffmpeg ..."
     echo "cloning ffmpeg ..."
-    git clone git://source.ffmpeg.org/ffmpeg.git ffmpeg > /dev/null 2>&1
+    echo "CLONING ffmpeg" > "$TMP_CPX"/ffmpeg.log 2>&1
+    git clone git://source.ffmpeg.org/ffmpeg.git ffmpeg >> "$TMP_CPX"/ffmpeg.log 2>&1
     if [ $? != 0 ]; then
         echo "Git clone failed ..."
         echo "Can not continue"
@@ -987,14 +1065,17 @@ if [ "$RET_COND" == "4" ]; then
     fi
 
     echo "configuring ffmpeg ..."
+    echo "CONFIGURING ffmpeg" >> "$TMP_CPX"/ffmpeg.log 2>&1
     ./configure $FFMPEG_CONF_VAR >> "$TMP_CPX"/ffmpeg.log 2>&1
     if [ $? != 0 ]; then
         echo "Configuring ffmpeg failed ..."
+        echo "For further information why it failed refer to the file: \"/volume1/tmp_ffmpeg_install/source/ffmpeg/config.log\"."
         echo "Can not continue"
         exit 1
     fi
 
     echo "\"make\" ffmpeg ..."
+	echo "\"MAKE\" ffmpeg ..." >> "$TMP_CPX"/ffmpeg.log 2>&1
     make >> "$TMP_CPX"/ffmpeg.log 2>&1
     if [ $? != 0 ]; then
         echo "\"make\" failed ..."
@@ -1003,6 +1084,7 @@ if [ "$RET_COND" == "4" ]; then
     fi
 
     echo "\"make install\" ffmpeg ..."
+    echo "\"MAKE INSTALL\" ffmpeg ..." >> "$TMP_CPX"/ffmpeg.log 2>&1
     make install >> "$TMP_CPX"/ffmpeg.log 2>&1
     if [ $? != 0 ]; then
         echo "\"make install\" failed ..."
@@ -1013,7 +1095,7 @@ if [ "$RET_COND" == "4" ]; then
     #copying necessary libraries:
     RET_COND=5
     while true; do
-        ffmpeg_resp=$(ffmpeg 2>&1 > /dev/null)
+        ffmpeg_resp=$(/opt/bin/ffmpeg 2>&1 > /dev/null)
 
         miss_lib_txt=$(echo "$ffmpeg_resp" | grep "error while loading shared libraries")
         if [ $? != 0 ]; then
@@ -1032,7 +1114,7 @@ if [ "$RET_COND" == "4" ]; then
     done
 fi
 
-rm "$TMP_CPX"/condition > /dev/null 2>&1
+writeToConditionFileFinished
 RET_COND=0
 
 exit 0
