@@ -29,7 +29,6 @@ endScript ()
     		cd "$SRC_CPX"/x264/			> /dev/null 2>&1
     		make uninstall				> /dev/null 2>&1
     		make clean	 				> /dev/null 2>&1
-    		cd ..
     	fi
     fi
     
@@ -41,15 +40,13 @@ endScript ()
             cd faac-1.28/				> /dev/null 2>&1
             make uninstall				> /dev/null 2>&1
             make clean					> /dev/null 2>&1
-            cd ..
     	fi
     fi
     if [ $RET_COND == 4 ]; then # reverting ffmpeg installation
         echo "reverting ffmpeg installation..."
     	cd "$SRC_CPX"/ffmpeg	> /dev/null 2>&1
     	make uninstall			> /dev/null 2>&1
-    	make clean				> /dev/null 2>&1		
-    	cd ..
+    	make clean				> /dev/null 2>&1
     fi
     
     if [ $RET_COND -ge 1 -a $disp_error == 1 ]; then 
