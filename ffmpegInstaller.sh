@@ -767,7 +767,6 @@ if [ "$RET_COND" == "1" ]; then
 
     # checking version ...
     input="x"
-    PROCESSING_YASM=1
     while true; do
 
         echo "Are you on DSM 5 or newer? [y/n]"
@@ -775,6 +774,7 @@ if [ "$RET_COND" == "1" ]; then
 
         if [ "$input" == "n" ]; then
             #installing newer yasm-version
+            PROCESSING_YASM=1
             echo "Installing newer yasm version ..."
             cd "$SRC_CPX"
             ipkg remove yasm > /dev/null 2>&1
@@ -825,6 +825,7 @@ if [ "$RET_COND" == "1" ]; then
                 echo "Can not continue"
                 exit 1
             fi
+            PROCESSING_YASM=0
             break
 
         elif [ "$input" == "y" ]; then
@@ -839,7 +840,6 @@ if [ "$RET_COND" == "1" ]; then
             break
         fi
     done
-    PROCESSING_YASM=0
 
     input="x"
     while true; do
