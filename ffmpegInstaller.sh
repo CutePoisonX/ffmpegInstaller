@@ -721,6 +721,14 @@ writeToConditionFileFinished ()
     echo 1 >> "$TMP_CPX"/condition
     echo 1 >> "$TMP_CPX"/condition
     echo $LIBDL_DIR >> "$TMP_CPX"/condition
+
+    echo $LINK_LIBM >> "$TMP_CPX"/condition
+    echo $LINK_LIBAVCODEC >> "$TMP_CPX"/condition
+    echo $LINK_LIBSWSCALE >> "$TMP_CPX"/condition
+    echo $LINK_LIBAVUTIL >> "$TMP_CPX"/condition
+    echo $LINK_AVFORMAT >> "$TMP_CPX"/condition
+
+    echo $WGET_SSL_IPKG_PACKAGE_URL >> "$TMP_CPX"/condition
 }
 
 ############################################################################################################### BODY ###############################################################################################################
