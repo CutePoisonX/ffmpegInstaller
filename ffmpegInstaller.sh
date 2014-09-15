@@ -17,10 +17,7 @@ endScript ()
         mv "$TMP_CPX"/opt/include/x264* /opt/include/               > /dev/null 2>&1
         mv "$TMP_CPX"/usr/local/include/x264* /usr/local/include/   > /dev/null 2>&1
 
-        unlink /opt/"$LIBDL_DIR"/lib/libdl.so             > /dev/null 2>&1
-        unlink /opt/"$LIBDL_DIR"/lib/libdl.so.2           > /dev/null 2>&1
-        mv "$TMP_CPX"/libdl.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
-        mv "$TMP_CPX"/libdl.so.2 /opt/"$LIBDL_DIR"/lib/   > /dev/null 2>&1
+        unlinkDSM5libraries
     fi
     
     if [ $RET_COND == 2 ]; then # reverting x264 installation
@@ -453,19 +450,27 @@ assignSpecificVars ()
         echo "Detected cpu: ARM"
     fi
     if [ "$1" == 2 ]; then
+        echo "Detected cpu: Marvell Feroceon ARMv5TE compliant"
+
         LIBDL_DIR="arm-none-linux-gnueabi"
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
-        echo "Detected cpu: Marvell Feroceon ARMv5TE compliant"
+
+        WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/syno-x07/cross/unstable/wget-ssl_1.12-2_arm.ipk"
+
         found_config=1
     fi
     if [ "$1" == 3 ]; then
+        echo "Detected cpu: Marvell Kirkwood ARMv5TE compliant"
+
         LIBDL_DIR="arm-none-linux-gnueabi"
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
-        echo "Detected cpu: Marvell Feroceon ARMv5TE compliant"
+
+        WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/cs08q1armel/cross/unstable/wget-ssl_1.12-2_arm.ipk"
+
         found_config=1
     fi
     if [ "$1" == 4 ]; then
@@ -478,19 +483,34 @@ assignSpecificVars ()
         echo "Detected cpu: Freescale PowerPC"
     fi
     if [ "$1" == 7 ]; then
+        echo "Detected cpu: Freescale PowerPC"
+
         LIBDL_DIR="powerpc-linux-gnuspe"
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
-        FFMPEG_CONF_VAR="--arch=powerpc --target-os=linux --enable-optimizations --enable-shared --disable-ffserver --disable-ffplay --enable-gpl --prefix=/opt"
-        echo "Detected cpu: Freescale PowerPC"
+        FFMPEG_CONF_VAR="--arch=powerpc --target-os=linux --enable-optimizations --enable-shared --disable-ffserver --disable-ffplay --enable-gpl --prefix=/opt --disable-altivec"
+        X264_ADD_CONF_MOD="sed -i 's/CFLAGS=\"\$CFLAGS -maltivec -mabi=altivec\"/CFLAGS=\"$CFLAGS\"/' configure"
+
+        LINK_LIBM=true
+        LINK_LIBAVCODEC=true
+        LINK_LIBSWSCALE=true
+        LINK_LIBAVUTIL=true
+        LINK_AVFORMAT=true
+
+        WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/syno-e500/cross/unstable/wget-ssl_1.12-2_powerpc.ipk"
+
         found_config=1
     fi
     if [ "$1" == 8 ]; then
+        echo "Detected cpu: Intel Atom"
+
         LIBDL_DIR="i686-linux-gnu"
         X264_CONF_VAR="--prefix=/opt --enable-shared --host=i686-linux"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared"
         FFMPEG_CONF_VAR="--arch=i686 --target-os=linux --enable-optimizations --disable-altivec --enable-pic --enable-shared --disable-swscale-alpha --disable-ffserver --disable-ffplay --enable-nonfree --enable-version3 --enable-gpl --disable-doc --prefix=/opt"
-        echo "Detected cpu: Intel Atom"
+
+        WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/syno-i686/cross/unstable/wget-ssl_1.12-2_i686.ipk"
+
         found_config=1
     fi
     if [ "$1" == 9 ]; then
@@ -516,6 +536,14 @@ readFromConditionFile ()
     X264_VAR=$(sed '5q;d' "$TMP_CPX"/condition)
     LIBF_VAR=$(sed '6q;d' "$TMP_CPX"/condition)
     LIBDL_DIR=$(sed '7q;d' "$TMP_CPX"/condition)
+
+    LINK_LIBM=$(sed '8q;d' "$TMP_CPX"/condition)
+    LINK_LIBAVCODEC=$(sed '9q;d' "$TMP_CPX"/condition)
+    LINK_LIBSWSCALE=$(sed '10q;d' "$TMP_CPX"/condition)
+    LINK_LIBAVUTIL=$(sed '11q;d' "$TMP_CPX"/condition)
+    LINK_AVFORMAT=$(sed '12q;d' "$TMP_CPX"/condition)
+
+    WGET_SSL_IPKG_PACKAGE_URL=$(sed '13q;d' "$TMP_CPX"/condition)
 }
 
 writeToConditionFile ()
@@ -527,6 +555,134 @@ writeToConditionFile ()
     echo $X264_VAR >> "$TMP_CPX"/condition
     echo $LIBF_VAR >> "$TMP_CPX"/condition
     echo $LIBDL_DIR >> "$TMP_CPX"/condition
+
+    echo $LINK_LIBM >> "$TMP_CPX"/condition
+    echo $LINK_LIBAVCODEC >> "$TMP_CPX"/condition
+    echo $LINK_LIBSWSCALE >> "$TMP_CPX"/condition
+    echo $LINK_LIBAVUTIL >> "$TMP_CPX"/condition
+    echo $LINK_AVFORMAT >> "$TMP_CPX"/condition
+
+    echo $WGET_SSL_IPKG_PACKAGE_URL >> "$TMP_CPX"/condition
+}
+
+linkDSM5libraries ()
+{
+    echo "Fixing DSM 5 library issue"
+
+    #first, the libdl.so library:
+    mv /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/             > /dev/null 2>&1
+    mv /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/           > /dev/null 2>&1
+    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so      > /dev/null 2>&1
+    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2    > /dev/null 2>&1
+
+    #specific libraries:
+    if [ "$LINK_LIBM" == "true" ]; then
+        mv /opt/"$LIBDL_DIR"/lib/libm.so "$TMP_CPX"
+        mv /opt/"$LIBDL_DIR"/lib/libm.so.6 "$TMP_CPX"
+        ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so
+        ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so.6
+    fi
+    if [ "$LINK_LIBAVCODEC" == "true" ]; then
+        mv /opt/"$LIBDL_DIR"/lib/libavcodec.so "$TMP_CPX"
+        mv /opt/"$LIBDL_DIR"/lib/libavcodec.so.55 "$TMP_CPX"
+        ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so
+        ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so.55
+    fi
+    if [ "$LINK_LIBSWSCALE" == "true" ]; then
+        mv /opt/"$LIBDL_DIR"/lib/libswscale.so "$TMP_CPX"
+        mv /opt/"$LIBDL_DIR"/lib/libswscale.so.2 "$TMP_CPX"
+        ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so
+        ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so.2
+    fi
+    if [ "$LINK_LIBAVUTIL" == "true" ]; then
+        mv /opt/"$LIBDL_DIR"/lib/libavutil.so "$TMP_CPX"
+        mv /opt/"$LIBDL_DIR"/lib/libavutil.so.52 "$TMP_CPX"
+        ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so
+        ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so.52
+    fi
+    if [ "$LINK_AVFORMAT" == "true" ]; then
+        mv /opt/"$LIBDL_DIR"/lib/libavformat.so "$TMP_CPX"
+        mv /opt/"$LIBDL_DIR"/lib/libavformat.so.55 "$TMP_CPX"
+        ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so
+        ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so.55
+    fi
+
+    echo "Done"
+}
+
+unlinkDSM5libraries ()
+{
+    unlink /opt/"$LIBDL_DIR"/lib/libdl.so             > /dev/null 2>&1
+    unlink /opt/"$LIBDL_DIR"/lib/libdl.so.2           > /dev/null 2>&1
+    mv "$TMP_CPX"/libdl.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
+    mv "$TMP_CPX"/libdl.so.2 /opt/"$LIBDL_DIR"/lib/   > /dev/null 2>&1
+
+    if [ "$LINK_LIBM" == "true" ]; then
+        unlink /opt/"$LIBDL_DIR"/lib/libm.so             > /dev/null 2>&1
+        unlink /opt/"$LIBDL_DIR"/lib/libm.so.6           > /dev/null 2>&1
+        mv "$TMP_CPX"/libm.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
+        mv "$TMP_CPX"/libm.so.6 /opt/"$LIBDL_DIR"/lib/   > /dev/null 2>&1
+    fi
+    if [ "$LINK_LIBAVCODEC" == "true" ]; then
+        unlink /opt/"$LIBDL_DIR"/lib/libavcodec.so             > /dev/null 2>&1
+        unlink /opt/"$LIBDL_DIR"/lib/libavcodec.so.55          > /dev/null 2>&1
+        mv "$TMP_CPX"/libavcodec.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
+        mv "$TMP_CPX"/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/  > /dev/null 2>&1
+    fi
+    if [ "$LINK_LIBSWSCALE" == "true" ]; then
+        unlink /opt/"$LIBDL_DIR"/lib/libswscale.so             > /dev/null 2>&1
+        unlink /opt/"$LIBDL_DIR"/lib/libswscale.so.2           > /dev/null 2>&1
+        mv "$TMP_CPX"/libswscale.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
+        mv "$TMP_CPX"/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/   > /dev/null 2>&1
+    fi
+    if [ "$LINK_LIBAVUTIL" == "true" ]; then
+        unlink /opt/"$LIBDL_DIR"/lib/libavutil.so             > /dev/null 2>&1
+        unlink /opt/"$LIBDL_DIR"/lib/libavutil.so.52          > /dev/null 2>&1
+        mv "$TMP_CPX"/libavutil.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
+        mv "$TMP_CPX"/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/  > /dev/null 2>&1
+    fi
+    if [ "$LINK_AVFORMAT" == "true" ]; then
+        unlink /opt/"$LIBDL_DIR"/lib/libavformat.so             > /dev/null 2>&1
+        unlink /opt/"$LIBDL_DIR"/lib/libavformat.so.55          > /dev/null 2>&1
+        mv "$TMP_CPX"/libavformat.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
+        mv "$TMP_CPX"/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/  > /dev/null 2>&1
+    fi
+}
+
+installOptwareDevel ()
+{
+    local opt_resp_txt=$(ipkg install -force-overwrite optware-devel     > /dev/null 2>&1)
+
+    local grep_success=$(echo "$opt_resp_txt" | grep "ERROR: The following packages conflict with wget-ssl:")
+    if [ $? == 0 ]; then
+        echo "Fixing wget-ssl conflict ..."
+        local wget_ssl_pkg=${WGET_SSL_IPKG_PACKAGE_URL##*/}
+
+        ipkg install libidn                         > /dev/null 2>&1
+        wget "$WGET_SSL_IPKG_PACKAGE_URL"           > /dev/null 2>&1
+        if [ $? != 0 ]; then
+            echo "Getting wget-ssl-package failed ..."
+            echo "Can not continue"
+            exit 1
+        fi
+
+        ipkg remove wget                            > /dev/null 2>&1
+        ipkg install "$wget_ssl_pkg"                > /dev/null 2>&1
+        if [ $? != 0 ]; then
+            echo "Installing wget-ssl-package failed ..."
+            echo "Can not continue"
+            exit 1
+        fi
+
+        ipkg update                                 > /dev/null 2>&1
+        ipkg upgrade                                > /dev/null 2>&1
+        ipkg install -force-overwrite optware-devel > /dev/null 2>&1
+        if [ $? != 0 ]; then
+            echo "An unknown error occured during the installation of optware-devel ..."
+            echo "Can not continue"
+            exit 1
+        fi
+    fi
 }
 
 ############################################################################################################### BODY ###############################################################################################################
@@ -731,9 +887,9 @@ if [ "$RET_COND" == "1" ]; then
     # install required ipkg packages (still assuming bash is already in /opt/bin of course)
     echo "installing necessary ipkg packages ..."
     ipkg update 					> /dev/null 2>&1
-    ipkg install optware-devel		> /dev/null 2>&1
     ipkg install gcc                > /dev/null 2>&1
     ipkg install git				> /dev/null 2>&1
+    installOptwareDevel
     echo "Done"
 
     # removing ipkg packages wich interfere
@@ -763,12 +919,7 @@ if [ "$RET_COND" == "1" ]; then
             break
         elif [ "$input" == "y" ]; then
             #fixing DSM 5 lib issue
-            echo "Fixing DSM 5 library issue"
-            mv /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/             > /dev/null 2>&1
-            mv /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/           > /dev/null 2>&1
-            ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so      > /dev/null 2>&1
-            ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2    > /dev/null 2>&1
-            echo "Done"
+            linkDSM5libraries
             # assuming this runs without errors....
             break
         fi
@@ -869,6 +1020,9 @@ if [ "$RET_COND" == "2" ]; then
 		echo "Can not continue"
 		exit 1
 	fi
+
+    #processor specific action ...
+    eval $X264_ADD_CONF_MOD > /dev/null 2>&1
 
 	echo "Configuring x264 ..."
 	sh configure $X264_CONF_VAR >> "$TMP_CPX"/x264.log 2>&1
