@@ -1,4 +1,9 @@
-This script performs an automatic installation of ffmpeg on Synology DiskStations with ARM processors. The script was tested with a Marvel Kirkwood cpu. Other cpus may not work.
+This script performs an automatic installation of ffmpeg on Synology DiskStations.
+The script was tested with the following cpus:
+
+1) Marvell Kirkwood ARMv5TE compliant
+
+2) Intel Atom
 
 Requirements: The script will only work if you have ipkg installed on your DS (see e.g.: http://forum.synology.com/wiki/index.php/Overview_on_modifying_the_Synology_Server,_bootstrap,_ipkg_etc) and bash is installed in /opt/bin/. The installation of bash in /opt/bin/ is easy with ipkg - just do: "ipkg install bash" in the command line.
 
