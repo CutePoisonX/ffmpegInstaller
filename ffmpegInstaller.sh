@@ -17,22 +17,7 @@ endScript ()
         mv "$TMP_CPX"/opt/include/x264* /opt/include/               > /dev/null 2>&1
         mv "$TMP_CPX"/usr/local/include/x264* /usr/local/include/   > /dev/null 2>&1
 
-<<<<<<< HEAD
         unlinkDSM5libraries
-=======
-        unlink /opt/"$LIBDL_DIR"/lib/libdl.so             > /dev/null 2>&1
-        unlink /opt/"$LIBDL_DIR"/lib/libdl.so.2           > /dev/null 2>&1
-        mv "$TMP_CPX"/libdl.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
-        mv "$TMP_CPX"/libdl.so.2 /opt/"$LIBDL_DIR"/lib/   > /dev/null 2>&1
-
-        if [ $PROCESSING_YASM == 1 ]; then
-            echo "reverting yasm installation..."
-            cd "$SRC_CPX"/yasm-1.2.0/
-            make uninstall				> /dev/null 2>&1
-            make clean	 				> /dev/null 2>&1
-            echo "Refer to the logfile for further information: \"/volume1/tmp_ffmpeg_install/tmp/yasm.log\"."
-        fi
->>>>>>> master
     fi
     
     if [ $RET_COND == 2 ]; then # reverting x264 installation
@@ -41,10 +26,7 @@ endScript ()
     		cd "$SRC_CPX"/x264/			> /dev/null 2>&1
     		make uninstall				> /dev/null 2>&1
     		make clean	 				> /dev/null 2>&1
-<<<<<<< HEAD
-=======
             echo "Refer to the logfile for further information: \"/volume1/tmp_ffmpeg_install/tmp/x264.log\"."
->>>>>>> master
     	fi
     fi
     
@@ -56,10 +38,7 @@ endScript ()
             cd faac-1.28/				> /dev/null 2>&1
             make uninstall				> /dev/null 2>&1
             make clean					> /dev/null 2>&1
-<<<<<<< HEAD
-=======
             echo "Refer to the logfile for further information: \"/volume1/tmp_ffmpeg_install/tmp/libfaac.log\"."
->>>>>>> master
     	fi
     fi
     if [ $RET_COND == 4 ]; then # reverting ffmpeg installation
@@ -67,10 +46,7 @@ endScript ()
     	cd "$SRC_CPX"/ffmpeg	> /dev/null 2>&1
     	make uninstall			> /dev/null 2>&1
     	make clean				> /dev/null 2>&1
-<<<<<<< HEAD
-=======
         echo "Refer to the logfile for further information: \"/volume1/tmp_ffmpeg_install/tmp/ffmpeg.log\"."
->>>>>>> master
     fi
     
     if [ $RET_COND -ge 1 -a $disp_error == 1 ]; then 
@@ -592,6 +568,17 @@ writeToConditionFile ()
     echo $WGET_SSL_IPKG_PACKAGE_URL >> "$TMP_CPX"/condition
 }
 
+writeToConditionFileFinished ()
+{
+    echo 1 > "$TMP_CPX"/condition
+    echo $X264_CONF_VAR >> "$TMP_CPX"/condition
+    echo $LIBF_CONF_VAR >> "$TMP_CPX"/condition
+    echo $FFMPEG_CONF_VAR >> "$TMP_CPX"/condition
+    echo 1 >> "$TMP_CPX"/condition
+    echo 1 >> "$TMP_CPX"/condition
+    echo $LIBDL_DIR >> "$TMP_CPX"/condition
+}
+
 linkDSM5libraries ()
 {
     echo "Fixing DSM 5 library issue"
@@ -712,25 +699,6 @@ installOptwareDevel ()
     fi
 }
 
-writeToConditionFileFinished ()
-{
-    echo 1 > "$TMP_CPX"/condition
-    echo $X264_CONF_VAR >> "$TMP_CPX"/condition
-    echo $LIBF_CONF_VAR >> "$TMP_CPX"/condition
-    echo $FFMPEG_CONF_VAR >> "$TMP_CPX"/condition
-    echo 1 >> "$TMP_CPX"/condition
-    echo 1 >> "$TMP_CPX"/condition
-    echo $LIBDL_DIR >> "$TMP_CPX"/condition
-
-    echo $LINK_LIBM >> "$TMP_CPX"/condition
-    echo $LINK_LIBAVCODEC >> "$TMP_CPX"/condition
-    echo $LINK_LIBSWSCALE >> "$TMP_CPX"/condition
-    echo $LINK_LIBAVUTIL >> "$TMP_CPX"/condition
-    echo $LINK_AVFORMAT >> "$TMP_CPX"/condition
-
-    echo $WGET_SSL_IPKG_PACKAGE_URL >> "$TMP_CPX"/condition
-}
-
 ############################################################################################################### BODY ###############################################################################################################
 ####################################################################################################################################################################################################################################
 ####################################################################################################################################################################################################################################
@@ -824,6 +792,10 @@ if [ -f "$TMP_CPX"/condition ]; then
 		 		readFromConditionFile
                 break
             elif [ "$input" == "n" ]; then
+                while [ $RET_COND -le 4 ]; do
+                    RET_COND=$(($RET_COND+1))
+                    endScript
+                done
                     translateDSModelToProcessor
                     assignSpecificVars "$?"
                     RET_COND=1
@@ -1015,16 +987,7 @@ if [ "$RET_COND" == "1" ]; then
 
         elif [ "$input" == "y" ]; then
             #fixing DSM 5 lib issue
-<<<<<<< HEAD
             linkDSM5libraries
-=======
-            echo "Fixing DSM 5 library issue ..."
-            mv /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/             > /dev/null 2>&1
-            mv /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/           > /dev/null 2>&1
-            ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so      > /dev/null 2>&1
-            ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2    > /dev/null 2>&1
-            echo "Done"
->>>>>>> master
             # assuming this runs without errors....
             break
         fi
