@@ -691,7 +691,7 @@ installOptwareDevel ()
             fi
 
             ipkg remove wget                            > /dev/null 2>&1
-            ipkg install "$wget_ssl_pkg"                > /dev/null 2>&1
+            ipkg install "$TMP_CPX"/"$wget_ssl_pkg"     > /dev/null 2>&1
             if [ $? != 0 ]; then
                 echo "Installing wget-ssl-package failed ..."
                 echo "Can not continue"
