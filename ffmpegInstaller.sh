@@ -673,36 +673,39 @@ unlinkDSM5libraries ()
 
 installOptwareDevel ()
 {
-    local opt_resp_txt=$(ipkg install -force-overwrite optware-devel     > /dev/null 2>&1)
+    ipkg list_installed | grep "optware-devel" > /dev/null 2>&1
+    if [ $? != 0 ]; then
 
-    local grep_success=$(echo "$opt_resp_txt" | grep "ERROR: The following packages conflict with wget-ssl:")
-    if [ $? == 0 ]; then
-        echo "Fixing wget-ssl conflict ..."
-        local wget_ssl_pkg=${WGET_SSL_IPKG_PACKAGE_URL##*/}
+        echo "Installing optware-devel ..."
+        ipkg install -force-overwrite optware-devel | grep "ERROR: The following packages conflict with wget-ssl:" > /dev/null 2>&1
+        if [ $? == 0 ]; then
+            echo "Fixing wget-ssl conflict ..."
+            local wget_ssl_pkg=${WGET_SSL_IPKG_PACKAGE_URL##*/}
 
-        ipkg install libidn                         > /dev/null 2>&1
-        wget "$WGET_SSL_IPKG_PACKAGE_URL"           > /dev/null 2>&1
-        if [ $? != 0 ]; then
-            echo "Getting wget-ssl-package failed ..."
-            echo "Can not continue"
-            exit 1
-        fi
+            ipkg install libidn                                                 > /dev/null 2>&1
+            wget -O "$TMP_CPX"/"$wget_ssl_pkg" "$WGET_SSL_IPKG_PACKAGE_URL"     > /dev/null 2>&1
+            if [ $? != 0 ]; then
+                echo "Getting wget-ssl-package failed ..."
+                echo "Can not continue"
+                exit 1
+            fi
 
-        ipkg remove wget                            > /dev/null 2>&1
-        ipkg install "$wget_ssl_pkg"                > /dev/null 2>&1
-        if [ $? != 0 ]; then
-            echo "Installing wget-ssl-package failed ..."
-            echo "Can not continue"
-            exit 1
-        fi
+            ipkg remove wget                            > /dev/null 2>&1
+            ipkg install "$wget_ssl_pkg"                > /dev/null 2>&1
+            if [ $? != 0 ]; then
+                echo "Installing wget-ssl-package failed ..."
+                echo "Can not continue"
+                exit 1
+            fi
 
-        ipkg update                                 > /dev/null 2>&1
-        ipkg upgrade                                > /dev/null 2>&1
-        ipkg install -force-overwrite optware-devel > /dev/null 2>&1
-        if [ $? != 0 ]; then
-            echo "An unknown error occured during the installation of optware-devel ..."
-            echo "Can not continue"
-            exit 1
+            ipkg update                                 > /dev/null 2>&1
+            ipkg upgrade                                > /dev/null 2>&1
+            ipkg install -force-overwrite optware-devel > /dev/null 2>&1
+            if [ $? != 0 ]; then
+                echo "An unknown error occured during the installation of optware-devel ..."
+                echo "Can not continue"
+                exit 1
+            fi
         fi
     fi
 }
@@ -1258,9 +1261,8 @@ if [ "$RET_COND" == "4" ]; then
     #copying necessary libraries:
     RET_COND=5
     while true; do
-        ffmpeg_resp=$(/opt/bin/ffmpeg 2>&1 > /dev/null)
 
-        miss_lib_txt=$(echo "$ffmpeg_resp" | grep "error while loading shared libraries")
+        /opt/bin/ffmpeg | grep "error while loading shared libraries" > /dev/null 2>&1
         if [ $? != 0 ]; then
             #no missing libraries
             break
