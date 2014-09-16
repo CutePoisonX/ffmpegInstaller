@@ -5,6 +5,10 @@ The script was tested with the following cpus:
 
 2) Intel Atom
 
+3) Freescale PowerPC (e500v)
+
+In order to check whether your DS is supported, take a look at: https://github.com/CutePoisonX/ffmpegInstaller/wiki
+
 Requirements: The script will only work if you have ipkg installed on your DS (see e.g.: http://forum.synology.com/wiki/index.php/Overview_on_modifying_the_Synology_Server,_bootstrap,_ipkg_etc) and bash is installed in /opt/bin/. The installation of bash in /opt/bin/ is easy with ipkg - just do: "ipkg install bash" in the command line.
 
 To install the script on your DiskStation perform the following steps:
