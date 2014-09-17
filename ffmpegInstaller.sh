@@ -478,6 +478,13 @@ assignSpecificVars ()
     fi
     if [ "$1" == 4 ]; then
         echo "Detected cpu: Marvell ARMADA ARMv7"
+
+        X264_CONF_VAR="--prefix=/opt --enable-shared"
+        LIBF_CONF_VAR="--prefix=/opt --enable-shared"
+        FFMPEG_CONF_VAR="--target-os=linux --enable-optimizations --enable-shared --disable-ffserver --disable-ffplay --enable-gpl --prefix=/opt"
+        WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/cs08q1armel/cross/unstable/wget-ssl_1.12-2_arm.ipk"
+
+        found_config=1
     fi
     if [ "$1" == 5 ]; then
         echo "Detected cpu: Mindspeed Comcerto 2000 ARMv7"
