@@ -479,6 +479,7 @@ assignSpecificVars ()
     if [ "$1" == 4 ]; then
         echo "Detected cpu: Marvell ARMADA ARMv7"
 
+        LIBDL_DIR="arm-none-linux-gnueabi"
         X264_CONF_VAR="--prefix=/opt --enable-shared"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared"
         FFMPEG_CONF_VAR="--target-os=linux --enable-optimizations --enable-shared --disable-ffserver --disable-ffplay --enable-gpl --prefix=/opt"
