@@ -833,7 +833,7 @@ fi
 ######################################################################################################################################
 
 if [ "$FFMPEG_CONF_VAR" == "" -o "$LIBDL_DIR" == "" ]; then
-    echo "Did not found a viable configuration for the specified DS model. Maybe your model is not supported yet."
+    echo "Did not find a viable configuration for the specified DS model. Maybe your model is not supported yet."
     echo "Cannot continue ..."
     echo "Please contact me in this thread: http://forum.synology.com/enu/viewtopic.php?f=37&t=64609, on github: https://github.com/CutePoisonX/ffmpegInstaller or write me a mail: CutePoisonXI@gmail.com if you want that your DS is supported in this script."
     exit 1
