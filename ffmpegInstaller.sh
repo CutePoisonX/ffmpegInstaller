@@ -710,6 +710,60 @@ installOptwareDevel ()
     fi
 }
 
+installNewerYasmVersion ()
+{
+    echo "Installing newer yasm version ..."
+    cd "$SRC_CPX"
+    ipkg remove yasm > /dev/null 2>&1
+
+    echo "downloading yasm ..."
+    echo "DOWNLOADING yasm" > "$TMP_CPX"/yasm.log 2>&1
+    wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
+    if [ $? != 0 ]; then
+        echo "Getting yasm failed ..."
+        echo "Can not continue"
+        exit 1
+    fi
+
+    echo "extracting yasm ..."
+    echo "EXTRACTING yasm" >> "$TMP_CPX"/yasm.log 2>&1
+    tar -xf yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
+    if [ $? != 0 ]; then
+        echo "Extracting yasm failed ..."
+        echo "Can not continue"
+        exit 1
+    fi
+    cd yasm-1.2.0
+
+    echo "configuring yasm ..."
+    echo "CONFIGURING yasm" >> "$TMP_CPX"/yasm.log 2>&1
+    ./configure >> "$TMP_CPX"/yasm.log 2>&1
+    if [ $? != 0 ]; then
+        echo "Configuring yasm failed ..."
+        echo "For further information why it failed refer to the file: \"/volume1/tmp_ffmpeg_install/source/yasm-1.2.0/config.log\"."
+        echo "Can not continue"
+        exit 1
+    fi
+
+    echo "\"make\" yasm ..."
+    echo "\"MAKE\" yasm ..." >> "$TMP_CPX"/yasm.log 2>&1
+    make >> "$TMP_CPX"/yasm.log 2>&1
+    if [ $? != 0 ]; then
+        echo "\"making\" yasm failed ..."
+        echo "Can not continue"
+        exit 1
+    fi
+
+    echo "\"make install\" yasm ..."
+    echo "\"MAKE INSTALL\" yasm ..." >> "$TMP_CPX"/yasm.log 2>&1
+    make install >> "$TMP_CPX"/yasm.log 2>&1
+    if [ $? != 0 ]; then
+        echo "Installing yasm failed ..."
+        echo "Can not continue"
+        exit 1
+    fi
+}
+
 ############################################################################################################### BODY ###############################################################################################################
 ####################################################################################################################################################################################################################################
 ####################################################################################################################################################################################################################################
@@ -935,74 +989,23 @@ if [ "$RET_COND" == "1" ]; then
 
     # checking version ...
     input="x"
-    while true; do
+    while [ "$input" != "n" ]; do
 
         echo "Are you on DSM 5 or newer? [y/n]"
         read input
 
-        if [ "$input" == "n" ]; then
-            #installing newer yasm-version
-            PROCESSING_YASM=1
-            echo "Installing newer yasm version ..."
-            cd "$SRC_CPX"
-            ipkg remove yasm > /dev/null 2>&1
-
-            echo "downloading yasm ..."
-            echo "DOWNLOADING yasm" > "$TMP_CPX"/yasm.log 2>&1
-            wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
-            if [ $? != 0 ]; then
-                echo "Getting yasm failed ..."
-                echo "Can not continue"
-                exit 1
-            fi
-
-            echo "extracting yasm ..."
-            echo "EXTRACTING yasm" >> "$TMP_CPX"/yasm.log 2>&1
-            tar -xf yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
-            if [ $? != 0 ]; then
-                echo "Extracting yasm failed ..."
-                echo "Can not continue"
-                exit 1
-            fi
-            cd yasm-1.2.0
-
-            echo "configuring yasm ..."
-            echo "CONFIGURING yasm" >> "$TMP_CPX"/yasm.log 2>&1
-            ./configure >> "$TMP_CPX"/yasm.log 2>&1
-            if [ $? != 0 ]; then
-                echo "Configuring yasm failed ..."
-                echo "For further information why it failed refer to the file: \"/volume1/tmp_ffmpeg_install/source/yasm-1.2.0/config.log\"."
-                echo "Can not continue"
-                exit 1
-            fi
-
-            echo "\"make\" yasm ..."
-            echo "\"MAKE\" yasm ..." >> "$TMP_CPX"/yasm.log 2>&1
-            make >> "$TMP_CPX"/yasm.log 2>&1
-            if [ $? != 0 ]; then
-                echo "\"making\" yasm failed ..."
-                echo "Can not continue"
-            exit 1
-            fi
-
-            echo "\"make install\" yasm ..."
-            echo "\"MAKE INSTALL\" yasm ..." >> "$TMP_CPX"/yasm.log 2>&1
-            make install >> "$TMP_CPX"/yasm.log 2>&1
-            if [ $? != 0 ]; then
-                echo "Installing yasm failed ..."
-                echo "Can not continue"
-                exit 1
-            fi
-            PROCESSING_YASM=0
-            break
-
-        elif [ "$input" == "y" ]; then
+        if [ "$input" == "y" ]; then
             #fixing DSM 5 lib issue
             linkDSM5libraries
             # assuming this runs without errors....
             break
         fi
     done
+
+    #installing newer yasm-version
+    PROCESSING_YASM=1
+    installNewerYasmVersion
+    PROCESSING_YASM=0
 
     input="x"
     while true; do
