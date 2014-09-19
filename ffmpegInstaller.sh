@@ -718,7 +718,7 @@ installNewerYasmVersion ()
 
     echo "downloading yasm ..."
     echo "DOWNLOADING yasm" > "$TMP_CPX"/yasm.log 2>&1
-    wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
+    wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
     if [ $? != 0 ]; then
         echo "Getting yasm failed ..."
         echo "Can not continue"
