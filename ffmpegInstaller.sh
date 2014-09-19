@@ -727,13 +727,13 @@ installNewerYasmVersion ()
 
     echo "extracting yasm ..."
     echo "EXTRACTING yasm" >> "$TMP_CPX"/yasm.log 2>&1
-    tar -xf yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
+    tar -xf yasm-1.3.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
     if [ $? != 0 ]; then
         echo "Extracting yasm failed ..."
         echo "Can not continue"
         exit 1
     fi
-    cd yasm-1.2.0
+    cd yasm-1.3.0
 
     echo "configuring yasm ..."
     echo "CONFIGURING yasm" >> "$TMP_CPX"/yasm.log 2>&1
