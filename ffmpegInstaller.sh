@@ -677,7 +677,7 @@ installOptwareDevel ()
     if [ $? != 0 ]; then
 
         echo "Installing optware-devel ..."
-        ipkg install -force-overwrite optware-devel | grep "ERROR: The following packages conflict with wget-ssl:" > /dev/null 2>&1
+        ipkg install -force-overwrite optware-devel 2>&1 | grep "ERROR: The following packages conflict with wget-ssl:" > /dev/null 2>&1
         if [ $? == 0 ]; then
             echo "Fixing wget-ssl conflict ..."
             local wget_ssl_pkg=${WGET_SSL_IPKG_PACKAGE_URL##*/}
@@ -1262,12 +1262,12 @@ if [ "$RET_COND" == "4" ]; then
     RET_COND=5
     while true; do
 
-        /opt/bin/ffmpeg | grep "error while loading shared libraries" > /dev/null 2>&1
+        /opt/bin/ffmpeg 2>&1 | grep "error while loading shared libraries" > /dev/null 2>&1
         if [ $? != 0 ]; then
             #no missing libraries
             break
         else
-            lib=$(echo "$miss_lib_txt" | sed 's/.*libraries: //' | sed 's/:.*//')
+            lib=$(/opt/bin/ffmpeg 2>&1 | sed 's/.*libraries: //' | sed 's/:.*//')
 
             #trying to copy the missing shared libraries
             cp /opt/lib/"$lib" /lib/ > /dev/null 2>&1
