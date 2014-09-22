@@ -999,13 +999,13 @@ if [ "$RET_COND" == "1" ]; then
             linkDSM5libraries
             # assuming this runs without errors....
             break
+        else
+            #installing newer yasm-version
+            PROCESSING_YASM=1
+            installNewerYasmVersion
+            PROCESSING_YASM=0
         fi
     done
-
-    #installing newer yasm-version
-    PROCESSING_YASM=1
-    installNewerYasmVersion
-    PROCESSING_YASM=0
 
     input="x"
     while true; do
