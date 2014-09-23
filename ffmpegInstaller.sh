@@ -613,7 +613,7 @@ linkDSM5libraries ()
         mv /opt/"$LIBDL_DIR"/lib/libc.so "$TMP_CPX"
         mv /opt/"$LIBDL_DIR"/lib/libc.so.6 "$TMP_CPX"
         ln -s /opt/lib/libc.so /opt/"$LIBDL_DIR"/lib/libc.so
-        ln -s /lib/libc.so.6 /opt/"$LIBDL_DIR"/lib/libc.so.6
+        ln -s /opt/lib/libc.so /opt/"$LIBDL_DIR"/lib/libc.so.6
     fi
     if [ "$LINK_LIBM" == "true" ]; then
         mv /opt/"$LIBDL_DIR"/lib/libm.so "$TMP_CPX"
