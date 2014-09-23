@@ -1016,11 +1016,6 @@ if [ "$RET_COND" == "1" ]; then
                 PROCESSING_YASM=0
             fi
             break
-        else
-            #installing newer yasm-version
-            PROCESSING_YASM=1
-            installNewerYasmVersion
-            PROCESSING_YASM=0
         fi
     done
 
