@@ -612,7 +612,7 @@ linkDSM5libraries ()
     if [ "$LINK_LIBC" == "true" ]; then
         mv /opt/"$LIBDL_DIR"/lib/libc.so "$TMP_CPX"
         mv /opt/"$LIBDL_DIR"/lib/libc.so.6 "$TMP_CPX"
-        ln -s /lib/libc.so.6 /opt/"$LIBDL_DIR"/lib/libc.so
+        ln -s /opt/lib/libc.so /opt/"$LIBDL_DIR"/lib/libc.so
         ln -s /lib/libc.so.6 /opt/"$LIBDL_DIR"/lib/libc.so.6
     fi
     if [ "$LINK_LIBM" == "true" ]; then
@@ -659,37 +659,37 @@ unlinkDSM5libraries ()
     if [ "$LINK_LIBC" == "true" ]; then
         unlink /opt/"$LIBDL_DIR"/lib/libc.so             > /dev/null 2>&1
         unlink /opt/"$LIBDL_DIR"/lib/libc.so.6           > /dev/null 2>&1
-        rm "$TMP_CPX"/libc.so                            > /dev/null 2>&1
+        mv "$TMP_CPX"/libc.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
         mv "$TMP_CPX"/libc.so.6 /opt/"$LIBDL_DIR"/lib/   > /dev/null 2>&1
     fi
     if [ "$LINK_LIBM" == "true" ]; then
         unlink /opt/"$LIBDL_DIR"/lib/libm.so             > /dev/null 2>&1
         unlink /opt/"$LIBDL_DIR"/lib/libm.so.6           > /dev/null 2>&1
-        rm "$TMP_CPX"/libm.so                            > /dev/null 2>&1
+        mv "$TMP_CPX"/libm.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
         mv "$TMP_CPX"/libm.so.6 /opt/"$LIBDL_DIR"/lib/   > /dev/null 2>&1
     fi
     if [ "$LINK_LIBAVCODEC" == "true" ]; then
         unlink /opt/"$LIBDL_DIR"/lib/libavcodec.so             > /dev/null 2>&1
         unlink /opt/"$LIBDL_DIR"/lib/libavcodec.so.55          > /dev/null 2>&1
-        rm "$TMP_CPX"/libavcodec.so                            > /dev/null 2>&1
+        mv "$TMP_CPX"/libavcodec.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
         mv "$TMP_CPX"/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/  > /dev/null 2>&1
     fi
     if [ "$LINK_LIBSWSCALE" == "true" ]; then
         unlink /opt/"$LIBDL_DIR"/lib/libswscale.so             > /dev/null 2>&1
         unlink /opt/"$LIBDL_DIR"/lib/libswscale.so.2           > /dev/null 2>&1
-        rm "$TMP_CPX"/libswscale.so                            > /dev/null 2>&1
+        mv "$TMP_CPX"/libswscale.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
         mv "$TMP_CPX"/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/   > /dev/null 2>&1
     fi
     if [ "$LINK_LIBAVUTIL" == "true" ]; then
         unlink /opt/"$LIBDL_DIR"/lib/libavutil.so             > /dev/null 2>&1
         unlink /opt/"$LIBDL_DIR"/lib/libavutil.so.52          > /dev/null 2>&1
-        rm "$TMP_CPX"/libavutil.so                            > /dev/null 2>&1
+        mv "$TMP_CPX"/libavutil.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
         mv "$TMP_CPX"/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/  > /dev/null 2>&1
     fi
     if [ "$LINK_AVFORMAT" == "true" ]; then
         unlink /opt/"$LIBDL_DIR"/lib/libavformat.so             > /dev/null 2>&1
         unlink /opt/"$LIBDL_DIR"/lib/libavformat.so.55          > /dev/null 2>&1
-        rm "$TMP_CPX"/libavformat.so                            > /dev/null 2>&1
+        mv "$TMP_CPX"/libavformat.so /opt/"$LIBDL_DIR"/lib/     > /dev/null 2>&1
         mv "$TMP_CPX"/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/  > /dev/null 2>&1
     fi
 }
