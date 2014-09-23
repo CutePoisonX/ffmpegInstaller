@@ -594,39 +594,51 @@ linkDSM5libraries ()
     echo "Fixing DSM 5 library issue"
 
     #first, the libdl.so library:
-    mv /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/
-    mv /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/
+    cp /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/
+    rm /opt/"$LIBDL_DIR"/lib/libdl.so
+    cp /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/
+    rm /opt/"$LIBDL_DIR"/lib/libdl.so.2
     ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so
     ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2
 
     #specific libraries:
     if [ "$LINK_LIBM" == "true" ]; then
-        mv /opt/"$LIBDL_DIR"/lib/libm.so "$TMP_CPX"
-        mv /opt/"$LIBDL_DIR"/lib/libm.so.6 "$TMP_CPX"
+        cp /opt/"$LIBDL_DIR"/lib/libm.so "$TMP_CPX"
+        rm /opt/"$LIBDL_DIR"/lib/libm.so
+        cp /opt/"$LIBDL_DIR"/lib/libm.so.6 "$TMP_CPX"
+        rm /opt/"$LIBDL_DIR"/lib/libm.so.6
         ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so
         ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so.6
     fi
     if [ "$LINK_LIBAVCODEC" == "true" ]; then
-        mv /opt/"$LIBDL_DIR"/lib/libavcodec.so "$TMP_CPX"
-        mv /opt/"$LIBDL_DIR"/lib/libavcodec.so.55 "$TMP_CPX"
+        cp /opt/"$LIBDL_DIR"/lib/libavcodec.so "$TMP_CPX"
+        rm /opt/"$LIBDL_DIR"/lib/libavcodec.so
+        cp /opt/"$LIBDL_DIR"/lib/libavcodec.so.55 "$TMP_CPX"
+        rm /opt/"$LIBDL_DIR"/lib/libavcodec.so.55
         ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so
         ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so.55
     fi
     if [ "$LINK_LIBSWSCALE" == "true" ]; then
-        mv /opt/"$LIBDL_DIR"/lib/libswscale.so "$TMP_CPX"
-        mv /opt/"$LIBDL_DIR"/lib/libswscale.so.2 "$TMP_CPX"
+        cp /opt/"$LIBDL_DIR"/lib/libswscale.so "$TMP_CPX"
+        rm /opt/"$LIBDL_DIR"/lib/libswscale.so
+        cp /opt/"$LIBDL_DIR"/lib/libswscale.so.2 "$TMP_CPX"
+        rm /opt/"$LIBDL_DIR"/lib/libswscale.so.2
         ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so
         ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so.2
     fi
     if [ "$LINK_LIBAVUTIL" == "true" ]; then
-        mv /opt/"$LIBDL_DIR"/lib/libavutil.so "$TMP_CPX"
-        mv /opt/"$LIBDL_DIR"/lib/libavutil.so.52 "$TMP_CPX"
+        cp /opt/"$LIBDL_DIR"/lib/libavutil.so "$TMP_CPX"
+        rm /opt/"$LIBDL_DIR"/lib/libavutil.so
+        cp /opt/"$LIBDL_DIR"/lib/libavutil.so.52 "$TMP_CPX"
+        rm /opt/"$LIBDL_DIR"/lib/libavutil.so.52
         ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so
         ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so.52
     fi
     if [ "$LINK_AVFORMAT" == "true" ]; then
-        mv /opt/"$LIBDL_DIR"/lib/libavformat.so "$TMP_CPX"
-        mv /opt/"$LIBDL_DIR"/lib/libavformat.so.55 "$TMP_CPX"
+        cp /opt/"$LIBDL_DIR"/lib/libavformat.so "$TMP_CPX"
+        rm /opt/"$LIBDL_DIR"/lib/libavformat.so
+        cp /opt/"$LIBDL_DIR"/lib/libavformat.so.55 "$TMP_CPX"
+        rm /opt/"$LIBDL_DIR"/lib/libavformat.so.55
         ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so
         ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so.55
     fi
