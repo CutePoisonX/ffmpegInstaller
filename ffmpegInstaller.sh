@@ -6,7 +6,7 @@
 #  Created by CutePoisonX
 #
 RET_COND=-1
-
+set -x
 endScript ()
 {
     if [ $RET_COND == 1 ]; then # reverting preparation...
@@ -594,10 +594,10 @@ linkDSM5libraries ()
     echo "Fixing DSM 5 library issue"
 
     #first, the libdl.so library:
-    mv /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/             > /dev/null 2>&1
-    mv /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/           > /dev/null 2>&1
-    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so      > /dev/null 2>&1
-    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2    > /dev/null 2>&1
+    mv /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/
+    mv /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/
+    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so
+    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2
 
     #specific libraries:
     if [ "$LINK_LIBM" == "true" ]; then
