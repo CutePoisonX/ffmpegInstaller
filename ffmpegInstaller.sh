@@ -512,6 +512,8 @@ assignSpecificVars ()
         LIBF_CONF_VAR="--prefix=/opt --enable-shared"
         FFMPEG_CONF_VAR="--arch=i686 --target-os=linux --enable-optimizations --disable-altivec --enable-pic --enable-shared --disable-swscale-alpha --disable-ffserver --disable-ffplay --enable-nonfree --enable-version3 --enable-gpl --disable-doc --prefix=/opt"
 
+        YASM_COMPATIBLE=true
+
         WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/syno-i686/cross/unstable/wget-ssl_1.12-2_i686.ipk"
 
         found_config=1
@@ -989,7 +991,7 @@ if [ "$RET_COND" == "1" ]; then
 
     # checking version ...
     input="x"
-    while [ "$input" != "n" ]; do
+    while true; do
 
         echo "Are you on DSM 5 or newer? [y/n]"
         read input
@@ -998,14 +1000,24 @@ if [ "$RET_COND" == "1" ]; then
             #fixing DSM 5 lib issue
             linkDSM5libraries
             # assuming this runs without errors....
+            # disabling yasm on DSM5 even if compatible:
+            if [ "$YASM_COMPATIBLE" == "true" ]; then
+                FFMPEG_CONF_VAR="$FFMPEG_CONF_VAR"" --disable-asm"
+                X264_CONF_VAR="$X264_CONF_VAR"" --disable-asm"
+                LIBF_CONF_VAR="$LIBF_CONF_VAR"" --disable-asm"
+            fi
+            break
+
+        elif [ "$input" == "n" ]; then
+            #installing newer yasm-version
+            if [ "$YASM_COMPATIBLE" == "true" ]; then
+                PROCESSING_YASM=1
+                installNewerYasmVersion
+                PROCESSING_YASM=0
+            fi
             break
         fi
     done
-
-    #installing newer yasm-version
-    PROCESSING_YASM=1
-    installNewerYasmVersion
-    PROCESSING_YASM=0
 
     input="x"
     while true; do
