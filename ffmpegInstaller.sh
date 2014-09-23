@@ -720,7 +720,7 @@ installNewerYasmVersion ()
 
     echo "downloading yasm ..."
     echo "DOWNLOADING yasm" > "$TMP_CPX"/yasm.log 2>&1
-    wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
+    wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
     if [ $? != 0 ]; then
         echo "Getting yasm failed ..."
         echo "Can not continue"
@@ -729,13 +729,13 @@ installNewerYasmVersion ()
 
     echo "extracting yasm ..."
     echo "EXTRACTING yasm" >> "$TMP_CPX"/yasm.log 2>&1
-    tar -xf yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
+    tar -xf yasm-1.3.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
     if [ $? != 0 ]; then
         echo "Extracting yasm failed ..."
         echo "Can not continue"
         exit 1
     fi
-    cd yasm-1.2.0
+    cd yasm-1.3.0
 
     echo "configuring yasm ..."
     echo "CONFIGURING yasm" >> "$TMP_CPX"/yasm.log 2>&1
@@ -1016,6 +1016,11 @@ if [ "$RET_COND" == "1" ]; then
                 PROCESSING_YASM=0
             fi
             break
+        else
+            #installing newer yasm-version
+            PROCESSING_YASM=1
+            installNewerYasmVersion
+            PROCESSING_YASM=0
         fi
     done
 
