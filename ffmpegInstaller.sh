@@ -6,7 +6,7 @@
 #  Created by CutePoisonX
 #
 RET_COND=-1
-set -x
+
 endScript ()
 {
     if [ $RET_COND == 1 ]; then # reverting preparation...
@@ -594,53 +594,53 @@ linkDSM5libraries ()
     echo "Fixing DSM 5 library issue"
 
     #first, the libdl.so library:
-    cp /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/
-    rm /opt/"$LIBDL_DIR"/lib/libdl.so
-    cp /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/
-    rm /opt/"$LIBDL_DIR"/lib/libdl.so.2
-    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so
-    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2
+    cp /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/               > /dev/null 2>&1
+    rm /opt/"$LIBDL_DIR"/lib/libdl.so                           > /dev/null 2>&1
+    cp /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/             > /dev/null 2>&1
+    rm /opt/"$LIBDL_DIR"/lib/libdl.so.2                         > /dev/null 2>&1
+    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so        > /dev/null 2>&1
+    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2      > /dev/null 2>&1
 
     #specific libraries:
     if [ "$LINK_LIBM" == "true" ]; then
-        cp /opt/"$LIBDL_DIR"/lib/libm.so "$TMP_CPX"
-        rm /opt/"$LIBDL_DIR"/lib/libm.so
-        cp /opt/"$LIBDL_DIR"/lib/libm.so.6 "$TMP_CPX"
-        rm /opt/"$LIBDL_DIR"/lib/libm.so.6
-        ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so
-        ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so.6
+        cp /opt/"$LIBDL_DIR"/lib/libm.so "$TMP_CPX"             > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libm.so                        > /dev/null 2>&1
+        cp /opt/"$LIBDL_DIR"/lib/libm.so.6 "$TMP_CPX"           > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libm.so.6                      > /dev/null 2>&1
+        ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so      > /dev/null 2>&1
+        ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so.6    > /dev/null 2>&1
     fi
     if [ "$LINK_LIBAVCODEC" == "true" ]; then
-        cp /opt/"$LIBDL_DIR"/lib/libavcodec.so "$TMP_CPX"
-        rm /opt/"$LIBDL_DIR"/lib/libavcodec.so
-        cp /opt/"$LIBDL_DIR"/lib/libavcodec.so.55 "$TMP_CPX"
-        rm /opt/"$LIBDL_DIR"/lib/libavcodec.so.55
-        ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so
-        ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so.55
+        cp /opt/"$LIBDL_DIR"/lib/libavcodec.so "$TMP_CPX"                       > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavcodec.so                                  > /dev/null 2>&1
+        cp /opt/"$LIBDL_DIR"/lib/libavcodec.so.55 "$TMP_CPX"                    > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavcodec.so.55                               > /dev/null 2>&1
+        ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so         > /dev/null 2>&1
+        ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so.55      > /dev/null 2>&1
     fi
     if [ "$LINK_LIBSWSCALE" == "true" ]; then
-        cp /opt/"$LIBDL_DIR"/lib/libswscale.so "$TMP_CPX"
-        rm /opt/"$LIBDL_DIR"/lib/libswscale.so
-        cp /opt/"$LIBDL_DIR"/lib/libswscale.so.2 "$TMP_CPX"
-        rm /opt/"$LIBDL_DIR"/lib/libswscale.so.2
-        ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so
-        ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so.2
+        cp /opt/"$LIBDL_DIR"/lib/libswscale.so "$TMP_CPX"                       > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libswscale.so                                  > /dev/null 2>&1
+        cp /opt/"$LIBDL_DIR"/lib/libswscale.so.2 "$TMP_CPX"                     > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libswscale.so.2                                > /dev/null 2>&1
+        ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so          > /dev/null 2>&1
+        ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so.2        > /dev/null 2>&1
     fi
     if [ "$LINK_LIBAVUTIL" == "true" ]; then
-        cp /opt/"$LIBDL_DIR"/lib/libavutil.so "$TMP_CPX"
-        rm /opt/"$LIBDL_DIR"/lib/libavutil.so
-        cp /opt/"$LIBDL_DIR"/lib/libavutil.so.52 "$TMP_CPX"
-        rm /opt/"$LIBDL_DIR"/lib/libavutil.so.52
-        ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so
-        ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so.52
+        cp /opt/"$LIBDL_DIR"/lib/libavutil.so "$TMP_CPX"                        > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavutil.so                                   > /dev/null 2>&1
+        cp /opt/"$LIBDL_DIR"/lib/libavutil.so.52 "$TMP_CPX"                     > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavutil.so.52                                > /dev/null 2>&1
+        ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so           > /dev/null 2>&1
+        ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so.52        > /dev/null 2>&1
     fi
     if [ "$LINK_AVFORMAT" == "true" ]; then
-        cp /opt/"$LIBDL_DIR"/lib/libavformat.so "$TMP_CPX"
-        rm /opt/"$LIBDL_DIR"/lib/libavformat.so
-        cp /opt/"$LIBDL_DIR"/lib/libavformat.so.55 "$TMP_CPX"
-        rm /opt/"$LIBDL_DIR"/lib/libavformat.so.55
-        ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so
-        ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so.55
+        cp /opt/"$LIBDL_DIR"/lib/libavformat.so "$TMP_CPX"                      > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavformat.so                                 > /dev/null 2>&1
+        cp /opt/"$LIBDL_DIR"/lib/libavformat.so.55 "$TMP_CPX"                   > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavformat.so.55                              > /dev/null 2>&1
+        ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so       > /dev/null 2>&1
+        ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so.55    > /dev/null 2>&1
     fi
 
     echo "Done"
