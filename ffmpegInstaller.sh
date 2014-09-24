@@ -6,7 +6,7 @@
 #  Created by CutePoisonX
 #
 RET_COND=-1
-
+set -x
 endScript ()
 {
     if [ $RET_COND == 1 ]; then # reverting preparation...
