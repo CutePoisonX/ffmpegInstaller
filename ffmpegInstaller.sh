@@ -523,6 +523,8 @@ assignSpecificVars ()
         LIBF_CONF_VAR="--prefix=/opt --enable-shared"
         FFMPEG_CONF_VAR="--arch=i686 --target-os=linux --enable-optimizations --disable-altivec --enable-pic --enable-shared --disable-swscale-alpha --disable-ffserver --disable-ffplay --enable-nonfree --enable-version3 --enable-gpl --disable-doc --prefix=/opt"
 
+        YASM_COMPATIBLE=true
+
         WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/syno-i686/cross/unstable/wget-ssl_1.12-2_i686.ipk"
 
         found_config=1
@@ -603,10 +605,12 @@ linkDSM5libraries ()
     echo "Fixing DSM 5 library issue"
 
     #first, the libdl.so library:
-    mv /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/             > /dev/null 2>&1
-    mv /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/           > /dev/null 2>&1
-    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so      > /dev/null 2>&1
-    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2    > /dev/null 2>&1
+    cp /opt/"$LIBDL_DIR"/lib/libdl.so "$TMP_CPX"/               > /dev/null 2>&1
+    rm /opt/"$LIBDL_DIR"/lib/libdl.so                           > /dev/null 2>&1
+    cp /opt/"$LIBDL_DIR"/lib/libdl.so.2 "$TMP_CPX"/             > /dev/null 2>&1
+    rm /opt/"$LIBDL_DIR"/lib/libdl.so.2                         > /dev/null 2>&1
+    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so        > /dev/null 2>&1
+    ln -s /lib/libdl.so.2 /opt/"$LIBDL_DIR"/lib/libdl.so.2      > /dev/null 2>&1
 
     #specific libraries:
     if [ "$LINK_LIBC" == "true" ]; then
@@ -616,34 +620,44 @@ linkDSM5libraries ()
         ln -s /opt/lib/libc.so /opt/"$LIBDL_DIR"/lib/libc.so.6
     fi
     if [ "$LINK_LIBM" == "true" ]; then
-        mv /opt/"$LIBDL_DIR"/lib/libm.so "$TMP_CPX"
-        mv /opt/"$LIBDL_DIR"/lib/libm.so.6 "$TMP_CPX"
-        ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so
-        ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so.6
+        cp /opt/"$LIBDL_DIR"/lib/libm.so "$TMP_CPX"             > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libm.so                        > /dev/null 2>&1
+        cp /opt/"$LIBDL_DIR"/lib/libm.so.6 "$TMP_CPX"           > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libm.so.6                      > /dev/null 2>&1
+        ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so      > /dev/null 2>&1
+        ln -s /lib/libm.so.6 /opt/"$LIBDL_DIR"/lib/libm.so.6    > /dev/null 2>&1
     fi
     if [ "$LINK_LIBAVCODEC" == "true" ]; then
-        mv /opt/"$LIBDL_DIR"/lib/libavcodec.so "$TMP_CPX"
-        mv /opt/"$LIBDL_DIR"/lib/libavcodec.so.55 "$TMP_CPX"
-        ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so
-        ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so.55
+        cp /opt/"$LIBDL_DIR"/lib/libavcodec.so "$TMP_CPX"                       > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavcodec.so                                  > /dev/null 2>&1
+        cp /opt/"$LIBDL_DIR"/lib/libavcodec.so.55 "$TMP_CPX"                    > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavcodec.so.55                               > /dev/null 2>&1
+        ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so         > /dev/null 2>&1
+        ln -s /lib/libavcodec.so.55 /opt/"$LIBDL_DIR"/lib/libavcodec.so.55      > /dev/null 2>&1
     fi
     if [ "$LINK_LIBSWSCALE" == "true" ]; then
-        mv /opt/"$LIBDL_DIR"/lib/libswscale.so "$TMP_CPX"
-        mv /opt/"$LIBDL_DIR"/lib/libswscale.so.2 "$TMP_CPX"
-        ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so
-        ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so.2
+        cp /opt/"$LIBDL_DIR"/lib/libswscale.so "$TMP_CPX"                       > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libswscale.so                                  > /dev/null 2>&1
+        cp /opt/"$LIBDL_DIR"/lib/libswscale.so.2 "$TMP_CPX"                     > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libswscale.so.2                                > /dev/null 2>&1
+        ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so          > /dev/null 2>&1
+        ln -s /lib/libswscale.so.2 /opt/"$LIBDL_DIR"/lib/libswscale.so.2        > /dev/null 2>&1
     fi
     if [ "$LINK_LIBAVUTIL" == "true" ]; then
-        mv /opt/"$LIBDL_DIR"/lib/libavutil.so "$TMP_CPX"
-        mv /opt/"$LIBDL_DIR"/lib/libavutil.so.52 "$TMP_CPX"
-        ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so
-        ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so.52
+        cp /opt/"$LIBDL_DIR"/lib/libavutil.so "$TMP_CPX"                        > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavutil.so                                   > /dev/null 2>&1
+        cp /opt/"$LIBDL_DIR"/lib/libavutil.so.52 "$TMP_CPX"                     > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavutil.so.52                                > /dev/null 2>&1
+        ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so           > /dev/null 2>&1
+        ln -s /lib/libavutil.so.52 /opt/"$LIBDL_DIR"/lib/libavutil.so.52        > /dev/null 2>&1
     fi
     if [ "$LINK_AVFORMAT" == "true" ]; then
-        mv /opt/"$LIBDL_DIR"/lib/libavformat.so "$TMP_CPX"
-        mv /opt/"$LIBDL_DIR"/lib/libavformat.so.55 "$TMP_CPX"
-        ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so
-        ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so.55
+        cp /opt/"$LIBDL_DIR"/lib/libavformat.so "$TMP_CPX"                      > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavformat.so                                 > /dev/null 2>&1
+        cp /opt/"$LIBDL_DIR"/lib/libavformat.so.55 "$TMP_CPX"                   > /dev/null 2>&1
+        rm /opt/"$LIBDL_DIR"/lib/libavformat.so.55                              > /dev/null 2>&1
+        ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so       > /dev/null 2>&1
+        ln -s /lib/libavformat.so.55 /opt/"$LIBDL_DIR"/lib/libavformat.so.55    > /dev/null 2>&1
     fi
 
     echo "Done"
@@ -700,7 +714,7 @@ installOptwareDevel ()
     if [ $? != 0 ]; then
 
         echo "Installing optware-devel ..."
-        ipkg install -force-overwrite optware-devel | grep "ERROR: The following packages conflict with wget-ssl:" > /dev/null 2>&1
+        ipkg install -force-overwrite optware-devel 2>&1 | grep "ERROR: The following packages conflict with wget-ssl:" > /dev/null 2>&1
         if [ $? == 0 ]; then
             echo "Fixing wget-ssl conflict ..."
             local wget_ssl_pkg=${WGET_SSL_IPKG_PACKAGE_URL##*/}
@@ -730,6 +744,60 @@ installOptwareDevel ()
                 exit 1
             fi
         fi
+    fi
+}
+
+installNewerYasmVersion ()
+{
+    echo "Installing newer yasm version ..."
+    cd "$SRC_CPX"
+    ipkg remove yasm > /dev/null 2>&1
+
+    echo "downloading yasm ..."
+    echo "DOWNLOADING yasm" > "$TMP_CPX"/yasm.log 2>&1
+    wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
+    if [ $? != 0 ]; then
+        echo "Getting yasm failed ..."
+        echo "Can not continue"
+        exit 1
+    fi
+
+    echo "extracting yasm ..."
+    echo "EXTRACTING yasm" >> "$TMP_CPX"/yasm.log 2>&1
+    tar -xf yasm-1.3.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
+    if [ $? != 0 ]; then
+        echo "Extracting yasm failed ..."
+        echo "Can not continue"
+        exit 1
+    fi
+    cd yasm-1.3.0
+
+    echo "configuring yasm ..."
+    echo "CONFIGURING yasm" >> "$TMP_CPX"/yasm.log 2>&1
+    ./configure >> "$TMP_CPX"/yasm.log 2>&1
+    if [ $? != 0 ]; then
+        echo "Configuring yasm failed ..."
+        echo "For further information why it failed refer to the file: \"/volume1/tmp_ffmpeg_install/source/yasm-1.2.0/config.log\"."
+        echo "Can not continue"
+        exit 1
+    fi
+
+    echo "\"make\" yasm ..."
+    echo "\"MAKE\" yasm ..." >> "$TMP_CPX"/yasm.log 2>&1
+    make >> "$TMP_CPX"/yasm.log 2>&1
+    if [ $? != 0 ]; then
+        echo "\"making\" yasm failed ..."
+        echo "Can not continue"
+        exit 1
+    fi
+
+    echo "\"make install\" yasm ..."
+    echo "\"MAKE INSTALL\" yasm ..." >> "$TMP_CPX"/yasm.log 2>&1
+    make install >> "$TMP_CPX"/yasm.log 2>&1
+    if [ $? != 0 ]; then
+        echo "Installing yasm failed ..."
+        echo "Can not continue"
+        exit 1
     fi
 }
 
@@ -963,66 +1031,25 @@ if [ "$RET_COND" == "1" ]; then
         echo "Are you on DSM 5 or newer? [y/n]"
         read input
 
-        if [ "$input" == "n" ]; then
-            #installing newer yasm-version
-            PROCESSING_YASM=1
-            echo "Installing newer yasm version ..."
-            cd "$SRC_CPX"
-            ipkg remove yasm > /dev/null 2>&1
-
-            echo "downloading yasm ..."
-            echo "DOWNLOADING yasm" > "$TMP_CPX"/yasm.log 2>&1
-            wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
-            if [ $? != 0 ]; then
-                echo "Getting yasm failed ..."
-                echo "Can not continue"
-                exit 1
-            fi
-
-            echo "extracting yasm ..."
-            echo "EXTRACTING yasm" >> "$TMP_CPX"/yasm.log 2>&1
-            tar -xf yasm-1.2.0.tar.gz >> "$TMP_CPX"/yasm.log 2>&1
-            if [ $? != 0 ]; then
-                echo "Extracting yasm failed ..."
-                echo "Can not continue"
-                exit 1
-            fi
-            cd yasm-1.2.0
-
-            echo "configuring yasm ..."
-            echo "CONFIGURING yasm" >> "$TMP_CPX"/yasm.log 2>&1
-            ./configure >> "$TMP_CPX"/yasm.log 2>&1
-            if [ $? != 0 ]; then
-                echo "Configuring yasm failed ..."
-                echo "For further information why it failed refer to the file: \"/volume1/tmp_ffmpeg_install/source/yasm-1.2.0/config.log\"."
-                echo "Can not continue"
-                exit 1
-            fi
-
-            echo "\"make\" yasm ..."
-            echo "\"MAKE\" yasm ..." >> "$TMP_CPX"/yasm.log 2>&1
-            make >> "$TMP_CPX"/yasm.log 2>&1
-            if [ $? != 0 ]; then
-                echo "\"making\" yasm failed ..."
-                echo "Can not continue"
-            exit 1
-            fi
-
-            echo "\"make install\" yasm ..."
-            echo "\"MAKE INSTALL\" yasm ..." >> "$TMP_CPX"/yasm.log 2>&1
-            make install >> "$TMP_CPX"/yasm.log 2>&1
-            if [ $? != 0 ]; then
-                echo "Installing yasm failed ..."
-                echo "Can not continue"
-                exit 1
-            fi
-            PROCESSING_YASM=0
-            break
-
-        elif [ "$input" == "y" ]; then
+        if [ "$input" == "y" ]; then
             #fixing DSM 5 lib issue
             linkDSM5libraries
             # assuming this runs without errors....
+            # disabling yasm on DSM5 even if compatible:
+            if [ "$YASM_COMPATIBLE" == "true" ]; then
+                FFMPEG_CONF_VAR="$FFMPEG_CONF_VAR"" --disable-asm"
+                X264_CONF_VAR="$X264_CONF_VAR"" --disable-asm"
+                LIBF_CONF_VAR="$LIBF_CONF_VAR"" --disable-asm"
+            fi
+            break
+
+        elif [ "$input" == "n" ]; then
+            #installing newer yasm-version
+            if [ "$YASM_COMPATIBLE" == "true" ]; then
+                PROCESSING_YASM=1
+                installNewerYasmVersion
+                PROCESSING_YASM=0
+            fi
             break
         fi
     done
@@ -1285,12 +1312,12 @@ if [ "$RET_COND" == "4" ]; then
     RET_COND=5
     while true; do
 
-        /opt/bin/ffmpeg | grep "error while loading shared libraries" > /dev/null 2>&1
+        /opt/bin/ffmpeg 2>&1 | grep "error while loading shared libraries" > /dev/null 2>&1
         if [ $? != 0 ]; then
             #no missing libraries
             break
         else
-            lib=$(echo "$miss_lib_txt" | sed 's/.*libraries: //' | sed 's/:.*//')
+            lib=$(/opt/bin/ffmpeg 2>&1 | sed 's/.*libraries: //' | sed 's/:.*//')
 
             #trying to copy the missing shared libraries
             cp /opt/lib/"$lib" /lib/ > /dev/null 2>&1
