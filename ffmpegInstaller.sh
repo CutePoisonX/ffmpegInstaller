@@ -7,6 +7,7 @@
 #
 RET_COND=-1
 
+set -x
 endScript ()
 {
     if [ $RET_COND == 1 ]; then # reverting preparation...
@@ -492,7 +493,7 @@ assignSpecificVars ()
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         FFMPEG_CONF_VAR="--arch=powerpc --target-os=linux --enable-optimizations --enable-shared --disable-ffserver --disable-ffplay --enable-gpl --prefix=/opt --disable-altivec"
-        X264_ADD_CONF_MOD="sed -i 's/CFLAGS=\"\$CFLAGS -maltivec -mabi=altivec\"/CFLAGS=\"$CFLAGS\"/' configure"
+        X264_ADD_CONF_MOD="sed -i 's/CFLAGS=\"\$CFLAGS -maltivec -mabi=altivec\"/CFLAGS=\"$CFLAGS\"/' configure ; sed -i -e '817,826d' configure"
 
         LINK_LIBM=true
         LINK_LIBAVCODEC=true
