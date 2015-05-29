@@ -791,6 +791,28 @@ installNewerYasmVersion ()
     fi
 }
 
+copyFFmpegLibraries ()
+{
+    while true; do
+
+    /opt/bin/ffmpeg 2>&1 | grep "error while loading shared libraries" > /dev/null 2>&1
+        if [ $? != 0 ]; then
+            #no missing libraries
+            break
+        else
+            local target_lib=$(/opt/bin/ffmpeg 2>&1 | sed 's/.*libraries: //' | sed 's/:.*//')
+            local lib=${target_lib%?}
+
+            #trying to copy the missing shared libraries
+            cp /opt/lib/"$lib"* /lib/$target_lib > /dev/null 2>&1
+            if [ $? != 0 ]; then
+                echo "Could not copy ""$lib"" to /lib. Can not continue. Note: ffmpeg is installed successfully but can not start. Maybe you try to locate the shared library yourself and copy it to /lib."
+                exit 1
+            fi
+        fi
+    done
+}
+
 ############################################################################################################### BODY ###############################################################################################################
 ####################################################################################################################################################################################################################################
 ####################################################################################################################################################################################################################################
@@ -1298,25 +1320,13 @@ if [ "$RET_COND" == "4" ]; then
         exit 1
     fi
 
+
     #copying necessary libraries:
     RET_COND=5
-    while true; do
-
-        /opt/bin/ffmpeg 2>&1 | grep "error while loading shared libraries" > /dev/null 2>&1
-        if [ $? != 0 ]; then
-            #no missing libraries
-            break
-        else
-            lib=$(/opt/bin/ffmpeg 2>&1 | sed 's/.*libraries: //' | sed 's/:.*//')
-
-            #trying to copy the missing shared libraries
-            cp /opt/lib/"$lib" /lib/ > /dev/null 2>&1
-            if [ $? != 0 ]; then
-                echo "Could not copy ""$lib"" to /lib. Can not continue. Note: ffmpeg is installed successfully but can not start. Maybe you try to locate the shared library yourself and copy it to /lib."
-                exit 1
-            fi
-        fi
-    done
+    writeToConditionFile
+fi
+if [ "$RET_COND" == "5" ]; then
+    copyFFmpegLibraries
 fi
 
 writeToConditionFileFinished
