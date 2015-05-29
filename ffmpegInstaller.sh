@@ -1254,14 +1254,14 @@ if [ "$RET_COND" == "4" ]; then
     echo "Installing ffmpeg ..."
     echo "cloning ffmpeg ..."
     echo "CLONING ffmpeg" > "$TMP_CPX"/ffmpeg.log 2>&1
-    git clone git://source.ffmpeg.org/ffmpeg.git ffmpeg >> "$TMP_CPX"/ffmpeg.log 2>&1
+    git clone https://gitorious.org/ffmpeg/ffmpeg-mt.git >> "$TMP_CPX"/ffmpeg.log 2>&1
     if [ $? != 0 ]; then
         echo "Git clone failed ..."
         echo "Can not continue"
         exit 1
     fi
 
-    cd ffmpeg
+    cd ffmpeg-mt
 
     sed -i 's/^#!.*$/#!\/opt\/bin\/bash/g' configure > /dev/null 2>&1
     if [ $? != 0 ]; then
