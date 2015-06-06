@@ -800,11 +800,10 @@ copyFFmpegLibraries ()
             #no missing libraries
             break
         else
-            local target_lib=$(/opt/bin/ffmpeg 2>&1 | sed 's/.*libraries: //' | sed 's/:.*//')
-            local lib=${target_lib%?}
+            local lib=$(/opt/bin/ffmpeg 2>&1 | sed 's/.*libraries: //' | sed 's/:.*//')
 
             #trying to copy the missing shared libraries
-            cp /opt/lib/"$lib"* /lib/$target_lib > /dev/null 2>&1
+            cp /opt/lib/"$lib" /lib/ > /dev/null 2>&1
             if [ $? != 0 ]; then
                 echo "Could not copy ""$lib"" to /lib. Can not continue. Note: ffmpeg is installed successfully but can not start. Maybe you try to locate the shared library yourself and copy it to /lib."
                 exit 1
