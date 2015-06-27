@@ -425,6 +425,12 @@ translateDSModelToProcessor ()
         if [ "$input" == "DS2415+" ]; then
             cpu_var=8
         fi
+        if [ "$input" == "DS1515+" ]; then
+            cpu_var=8
+        fi
+        if [ "$input" == "DS1815+" ]; then
+            cpu_var=8
+        fi
 
         # 9:
         if [ "$input" == "DS3611xs" ]; then
@@ -434,6 +440,9 @@ translateDSModelToProcessor ()
             cpu_var=9
         fi
         if [ "$input" == "RS3411(RP)xs" ]; then
+            cpu_var=9
+        fi
+        if [ "$input" == "DS3615xs" ]; then
             cpu_var=9
         fi
 
