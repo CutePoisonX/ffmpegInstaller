@@ -55,6 +55,48 @@ endScript ()
             echo "Refer to the logfile for further information: \"/volume1/tmp_ffmpeg_install/tmp/libfaac.log\"."
     	fi
     fi
+
+    if [ $RET_COND == 9 ]; then # reverting liblame installation
+	if [ $LAME_VAR == 1 ]; then
+	    echo "reverting liblame(mp3) installation..."
+			cd "$SRC_CPX"/				> /dev/null 2>&1
+			rm lame-3.99.5.tar.gz			> /dev/null 2>&1
+
+			cd lame-3.99.5/
+			make uninstall	
+
+			# make uninstall with liblame sometimes leaves behind emtpy folders and/or files. to completely remove any debris of liblame, uncomment the lines below
+
+			#rm -f /opt/lib/libmp3lame.la	> /dev/null 2>&1
+			#rm -f /opt/lib/libmp3lame.so.0.0.0	> /dev/null 2>&1
+			#rm -f /opt/lib/libmp3lame.so.0	> /dev/null 2>&1
+			#rm -f /opt/lib/libmp3lame.so	> /dev/null 2>&1
+			#rm -f /opt/lib/libmp3lame.a	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/about.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/abr.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/cbr.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/contact.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/contributors.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/detailed.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/history.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/index.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/introduction.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/links.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/list.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/ms_stereo.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/usage.html	> /dev/null 2>&1
+			#rm -f /opt/share/doc/lame/html/vbr.html	> /dev/null 2>&1
+			#rm -f /opt/share/man/man1/lame.1	> /dev/null 2>&1
+			#rm -f /opt/include/lame/lame.h	> /dev/null 2>&1
+			#rmdir /opt/include/lame	> /dev/null 2>&1
+			#rmdir /opt/share/doc/lame/html	> /dev/null 2>&1
+			#rmdir /opt/share/doc/lame	> /dev/null 2>&1
+
+			make clean				> /dev/null 2>&1
+            echo "Refer to the logfile for further information: \"/volume1/tmp_ffmpeg_install/tmp/lame.log\"."
+	fi
+    fi
+
     if [ $RET_COND == 4 ]; then # reverting ffmpeg installation
         echo "reverting ffmpeg installation..."
     	cd "$SRC_CPX"/ffmpeg	> /dev/null 2>&1
@@ -219,6 +261,9 @@ translateDSModelToProcessor ()
         if [ "$input" == "DS411" ]; then
             cpu_var=3
         fi
+	if [ "$input" == "RS411" ]; then
+	    cpu_var=3
+	fi
 
         # 4:
         if [ "$input" == "DS114" ]; then
@@ -481,6 +526,7 @@ assignSpecificVars ()
     LIBDL_DIR=""
     X264_CONF_VAR=""
     LIBF_CONF_VAR=""
+    LAME_CONF_VAR=""
     FFMPEG_CONF_VAR=""
 
     local found_config=0
@@ -494,6 +540,7 @@ assignSpecificVars ()
         LIBDL_DIR="arm-none-linux-gnueabi"
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
+	LAME_CONF_VAR="--prefix=/opt --enable-shared --disable-nasm --disable-frontend"
         FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
 
         WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/syno-x07/cross/unstable/wget-ssl_1.12-2_arm.ipk"
@@ -506,6 +553,7 @@ assignSpecificVars ()
         LIBDL_DIR="arm-none-linux-gnueabi"
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
+	LAME_CONF_VAR="--prefix=/opt --enable-shared --disable-nasm --disable-frontend"
         FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
 
         WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/cs08q1armel/cross/unstable/wget-ssl_1.12-2_arm.ipk"
@@ -527,6 +575,7 @@ assignSpecificVars ()
         LIBDL_DIR="powerpc-linux-gnuspe"
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
+	LAME_CONF_VAR="--prefix=/opt --enable-shared --disable-nasm --disable-frontend"
         FFMPEG_CONF_VAR="--enable-nonfree --arch=powerpc --target-os=linux --enable-optimizations --enable-shared --disable-ffserver --disable-ffplay --enable-gpl --prefix=/opt --disable-altivec"
         X264_ADD_CONF_MOD="sed -i 's/CFLAGS=\"\$CFLAGS -maltivec -mabi=altivec\"/CFLAGS=\"$CFLAGS\"/' configure ; sed -i -e '817,826d' configure"
 
@@ -546,6 +595,7 @@ assignSpecificVars ()
         LIBDL_DIR="i686-linux-gnu"
         X264_CONF_VAR="--prefix=/opt --enable-shared --host=i686-linux"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared"
+	LAME_CONF_VAR="--prefix=/opt --enable-shared --disable-frontend"
         FFMPEG_CONF_VAR="--arch=i686 --target-os=linux --enable-optimizations --disable-altivec --enable-pic --enable-shared --disable-swscale-alpha --disable-ffserver --disable-ffplay --enable-nonfree --enable-version3 --enable-gpl --disable-doc --prefix=/opt"
 
         YASM_COMPATIBLE=true
@@ -573,18 +623,20 @@ readFromConditionFile ()
     # assumes that file exists and that it is valid
     X264_CONF_VAR=$(sed '2q;d' "$TMP_CPX"/condition)
     LIBF_CONF_VAR=$(sed '3q;d' "$TMP_CPX"/condition)
-    FFMPEG_CONF_VAR=$(sed '4q;d' "$TMP_CPX"/condition)
-    X264_VAR=$(sed '5q;d' "$TMP_CPX"/condition)
-    LIBF_VAR=$(sed '6q;d' "$TMP_CPX"/condition)
-    LIBDL_DIR=$(sed '7q;d' "$TMP_CPX"/condition)
+    LAME_CONF_VAR=$(sed '4q;d' "$TMP_CPX"/condition)
+    FFMPEG_CONF_VAR=$(sed '5q;d' "$TMP_CPX"/condition)
+    X264_VAR=$(sed '6q;d' "$TMP_CPX"/condition)
+    LIBF_VAR=$(sed '7q;d' "$TMP_CPX"/condition)
+    LAME_VAR=$(sed '8q;d' "$TMP_CPX"/condition)
+    LIBDL_DIR=$(sed '9q;d' "$TMP_CPX"/condition)
 
-    LINK_LIBM=$(sed '8q;d' "$TMP_CPX"/condition)
-    LINK_LIBAVCODEC=$(sed '9q;d' "$TMP_CPX"/condition)
-    LINK_LIBSWSCALE=$(sed '10q;d' "$TMP_CPX"/condition)
-    LINK_LIBAVUTIL=$(sed '11q;d' "$TMP_CPX"/condition)
-    LINK_AVFORMAT=$(sed '12q;d' "$TMP_CPX"/condition)
+    LINK_LIBM=$(sed '10q;d' "$TMP_CPX"/condition)
+    LINK_LIBAVCODEC=$(sed '11q;d' "$TMP_CPX"/condition)
+    LINK_LIBSWSCALE=$(sed '12q;d' "$TMP_CPX"/condition)
+    LINK_LIBAVUTIL=$(sed '13q;d' "$TMP_CPX"/condition)
+    LINK_AVFORMAT=$(sed '14q;d' "$TMP_CPX"/condition)
 
-    WGET_SSL_IPKG_PACKAGE_URL=$(sed '13q;d' "$TMP_CPX"/condition)
+    WGET_SSL_IPKG_PACKAGE_URL=$(sed '15q;d' "$TMP_CPX"/condition)
 }
 
 writeToConditionFile ()
@@ -592,9 +644,11 @@ writeToConditionFile ()
     echo $RET_COND > "$TMP_CPX"/condition
     echo $X264_CONF_VAR >> "$TMP_CPX"/condition
     echo $LIBF_CONF_VAR >> "$TMP_CPX"/condition
+    echo $LAME_CONF_VAR >> "$TMP_CPX"/condition
     echo $FFMPEG_CONF_VAR >> "$TMP_CPX"/condition
     echo $X264_VAR >> "$TMP_CPX"/condition
     echo $LIBF_VAR >> "$TMP_CPX"/condition
+    echo $LAME_VAR >> "$TMP_CPX"/condition
     echo $LIBDL_DIR >> "$TMP_CPX"/condition
 
     echo $LINK_LIBM >> "$TMP_CPX"/condition
@@ -611,7 +665,9 @@ writeToConditionFileFinished ()
     echo 1 > "$TMP_CPX"/condition
     echo $X264_CONF_VAR >> "$TMP_CPX"/condition
     echo $LIBF_CONF_VAR >> "$TMP_CPX"/condition
+    echo $LAME_CONF_VAR >> "$TMP_CPX"/condition
     echo $FFMPEG_CONF_VAR >> "$TMP_CPX"/condition
+    echo 1 >> "$TMP_CPX"/condition
     echo 1 >> "$TMP_CPX"/condition
     echo 1 >> "$TMP_CPX"/condition
     echo $LIBDL_DIR >> "$TMP_CPX"/condition
@@ -847,9 +903,11 @@ SRC_CPX=/volume1/tmp_ffmpeg_install/source
 LIBDL_DIR=""
 X264_CONF_VAR=""
 LIBF_CONF_VAR=""
+LAME_CONF_VAR=""
 FFMPEG_CONF_VAR=""
 X264_VAR=1
 LIBF_VAR=1
+LAME_VAR=1
     
 disp_error=0
 
@@ -860,8 +918,8 @@ disp_error=0
 # Present script
 clear
 echo "This is a ffmpeg install script for Synolgy DiskStations by CutePoisonX"
-echo "It will install x264, libfaac and ffmpeg."
-echo "If you want to install other libraries (like lame e.g.), you will have to do it before you execute this script"
+echo "It will install x264, libfaac, liblame(mp3) and ffmpeg."
+echo "If you want to install other libraries, you will have to do it before you execute this script"
 echo "Note: you can also install it manually by using this tutorial: http://forum.synology.com/enu/viewtopic.php?f=37&t=64609"
 echo "Just to mention this: I'm not responsible for any harm done by this script..."
 
@@ -872,7 +930,13 @@ if [ "$1" == "reset" ]; then
     if [ -f "$TMP_CPX"/condition ]; then
         readFromConditionFile
         RET_COND=0
-        while [ $RET_COND -le 4 ]; do
+        while [ $RET_COND -le 4 -o $RET_COND == 9 ]; do
+	    if [ $RET_COND == 3 -a $LAME_VAR == 1 ]; then
+		RET_COND=9
+	    fi
+	    if [ $RET_COND == 9 ]; then
+		RET_COND=4
+	    fi
             RET_COND=$(($RET_COND+1))
             endScript
         done
@@ -1019,6 +1083,7 @@ if [ "$RET_COND" == "1" ]; then
     #removing previous logfiles
     rm "$TMP_CPX"/x264.log 		> /dev/null 2>&1
     rm "$TMP_CPX"/libfaac.log	> /dev/null 2>&1
+    rm "$TMP_CPX"/lame.log      > /dev/null 2>&1
     rm "$TMP_CPX"/ffmpeg.log 	> /dev/null 2>&1
 
     # check for ipkg
@@ -1046,6 +1111,7 @@ if [ "$RET_COND" == "1" ]; then
     echo "Removing interfering ipkg packages ..."
     ipkg remove ffmpeg				> /dev/null 2>&1
     ipkg remove x264				> /dev/null 2>&1
+    ipkg remove lame				> /dev/null 2>&1
     echo "Done"
 
     # removing previous installations of x264
@@ -1074,6 +1140,7 @@ if [ "$RET_COND" == "1" ]; then
                 FFMPEG_CONF_VAR="$FFMPEG_CONF_VAR"" --disable-asm"
                 X264_CONF_VAR="$X264_CONF_VAR"" --disable-asm"
                 LIBF_CONF_VAR="$LIBF_CONF_VAR"" --disable-asm"
+		LAME_CONF_VAR="$LAME_CONF_VAR"" --disable-nasm"
             fi
             break
 
@@ -1122,6 +1189,24 @@ if [ "$RET_COND" == "1" ]; then
             break
         fi
     done
+    input="x"
+    while true; do
+
+        echo "Do you wish to install liblame(mp3)? [y/n]"
+        read input
+
+        if [ "$input" == "n" ]; then
+            LAME_VAR=0
+            echo "liblame(mp3) will NOT be installed"
+            break
+        elif [ "$input" == "y" ]; then
+            LAME_VAR=1
+            echo "liblame(mp3) WILL BE installed"
+            FFMPEG_CONF_VAR="$FFMPEG_CONF_VAR"" --enable-libmp3lame"
+            break
+        fi
+    done
+
 
     echo ""
     echo "The ffmpeg configuration is now:"
@@ -1132,7 +1217,7 @@ if [ "$RET_COND" == "1" ]; then
     input="x"
     while true; do
 
-        echo "Do you wish to change the configuration and configure ffmpeg manually (this is usefull if you added additional libraries besides x264 and libfaac)? [y/n]"
+        echo "Do you wish to change the configuration and configure ffmpeg manually (this is usefull if you added additional libraries besides x264, libfaac and liblame(mp3))? [y/n]"
         read input
 
         if [ "$input" == "n" ]; then
@@ -1155,8 +1240,12 @@ if [ "$RET_COND" == "1" ]; then
         if [ $LIBF_VAR == 1 ]; then
             RET_COND=3
         else
+	    if [ $LAME_VAR == 1 ]; then
+		RET_COND=9
+	    else 
             RET_COND=4
         fi
+    fi
     fi
 
     writeToConditionFile
@@ -1219,7 +1308,11 @@ if [ "$RET_COND" == "2" ]; then
     if [ $LIBF_VAR == 1 ]; then
         RET_COND=3
     else
+	if [ $LAME_VAR == 1 ]; then
+	    RET_COND=9
+	else
         RET_COND=4
+    fi
     fi
 
     writeToConditionFile
@@ -1284,9 +1377,93 @@ if [ "$RET_COND" == "3" ]; then
 	fi
 
 	echo "Done"
+    if [ $LAME_VAR == 1 ]; then
+	RET_COND=9
+    else
+    RET_COND=4
+    fi
+    writeToConditionFile
+fi
+
+if [ "$RET_COND" == "9" ]; then
+	cd "$SRC_CPX"
+	#installing liblame(mp3)
+
+	echo "Installing liblame(mp3) now:"
+	echo "downloading liblame..."
+    	echo "DOWNLOADING liblame" > "$TMP_CPX"/lame.log 2>&1
+	wget http://downloads.sourceforge.net/lame/lame-3.99.5.tar.gz >> "$TMP_CPX"/lame.log 2>&1
+	if [ $? != 0 ]; then
+		echo "Could not download liblame ..."
+		echo "Can not continue"
+		exit 1
+	fi
+	echo "extracting liblame ..."
+    echo "EXTRACTING liblame(mp3)" >> "$TMP_CPX"/lame.log 2>&1
+	tar -xf lame-3.99.5.tar.gz >> "$TMP_CPX"/lame.log 2>&1
+	if [ $? != 0 ]; then
+		echo "Could not extract liblame ..."
+		echo "Can not continue"
+		exit 1
+	fi
+
+	cd lame-3.99.5
+	sed -i 's/^#!.*$/#!\/opt\/bin\/bash/g' configure > /dev/null 2>&1
+	if [ $? != 0 ]; then
+		echo "Changing shebang to /opt/bin/bash failed ..."
+		echo "Can not continue"
+		exit 1
+	fi
+
+	echo "configuring liblame ..."
+    echo "CONFIGURING liblame" >> "$TMP_CPX"/lame.log 2>&1
+	sh configure $LAME_CONF_VAR >> "$TMP_CPX"/lame.log 2>&1
+	if [ $? != 0 ]; then
+		echo "Configuring libfaac failed ..."
+        echo "For further information why it failed refer to the file: \"/volume1/tmp_ffmpeg_install/source/lame-3.99.5/config.log\"."
+		echo "Can not continue"
+		exit 1
+	fi
+
+	# workaround a bug in libtool (see https://bugs.launchpad.net/ubuntu/+source/libtool/+bug/299931)
+	sed -i 's/^SHELL\([[:space:]]\?\)=\([[:space:]]\?\)\("\?\)\([a-zA-Z0-9/]\?\)\+\("\?\)$/SHELL\1=\2\3\/opt\/bin\/bash\5/g' libtool > /dev/null 2>&1
+	if [ $? != 0 ]; then
+		echo "Changing the shell-variable in 'libtool' to /opt/bin/bash failed ..."
+		echo "Can not continue"
+		exit 1
+	fi
+
+	sed -i 's/^SHELL\([[:space:]]\?\)=\([[:space:]]\?\)\("\?\)\([a-zA-Z0-9/]\?\)\+\("\?\)$/SHELL\1=\2\3\/opt\/bin\/bash\5/g' Makefile > /dev/null 2>&1
+	if [ $? != 0 ]; then
+		echo "Changing the shell-variable in the 'Makefile' to /opt/bin/bash failed ..."
+		echo "Can not continue"
+		exit 1
+	fi
+
+
+	echo "\"make\" liblame ..."
+	echo "\"MAKE\" liblame ..." >> "$TMP_CPX"/lame.log 2>&1
+	make >> "$TMP_CPX"/lame.log 2>&1
+	if [ $? != 0 ]; then
+		echo "\"make\" failed ..."
+		echo "Can not continue"
+		exit 1
+	fi
+	
+	echo "\"make install\" liblame ..."
+    echo "\"MAKE INSTALL\" liblame ..." >> "$TMP_CPX"/lame.log 2>&1
+	make install >> "$TMP_CPX"/liblame.log 2>&1
+	if [ $? != 0 ]; then
+		echo "\"make install\" failed ..."
+		echo "Can not continue"
+		exit 1
+	fi
+
+	echo "Done"
     RET_COND=4
     writeToConditionFile
 fi
+
 # ---------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------------------------------------------------------
@@ -1355,3 +1532,22 @@ writeToConditionFileFinished
 RET_COND=0
 
 exit 0
+
+
+
+########################
+#                      #
+#  LIST OF RET_COND's  #
+#  ==================  #
+#                      #
+#  -1  =  Init         #
+#   0  =  AllOK        #
+#   1  =  CPU&Vars     #
+#   2  =  MakeX264     #
+#   3  =  MakeFAAC     #
+#   4  =  MakeFF       #
+#   5  =  CopyFF_Libs  #
+#   -                  #
+#   9  =  MakeLAME     #
+#                      #
+########################
