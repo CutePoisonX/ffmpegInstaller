@@ -38,3 +38,7 @@ Note: if you want to reset all changes that the script made to your DiskStation,
 "./ffmpegInstaller.sh reset"
 
 The script will ask you some questions before it starts. It attempts to create a directory in /volume1, so make sure /volume1 is available. If you experience any bugs, please report them. I'm not responsible for any harm done by this script.
+
+## Credits
+
+Sincere thanks to [tobiasvogel](https://github.com/tobiasvogel) for adding support for lame (mp3) and the RS411 model.
