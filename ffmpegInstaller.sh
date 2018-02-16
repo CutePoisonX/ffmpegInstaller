@@ -541,7 +541,7 @@ assignSpecificVars ()
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
 	LAME_CONF_VAR="--prefix=/opt --enable-shared --disable-nasm --disable-frontend"
-        FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
+        FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
 
         WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/syno-x07/cross/unstable/wget-ssl_1.12-2_arm.ipk"
 
@@ -554,7 +554,7 @@ assignSpecificVars ()
         X264_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
         LIBF_CONF_VAR="--prefix=/opt --enable-shared --disable-asm"
 	LAME_CONF_VAR="--prefix=/opt --enable-shared --disable-nasm --disable-frontend"
-        FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-memalign-hack --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --disable-ffserver --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
+        FFMPEG_CONF_VAR="--enable-shared --enable-gpl --enable-version3 --enable-nonfree --disable-armv6 --disable-armv6t2 --disable-ffplay --prefix=/opt --disable-neon --disable-asm --enable-avcodec --arch=arm --cpu=armv5te --enable-pthreads --disable-decoder=zmbv --target-os=linux --enable-armv5te"
 
         WGET_SSL_IPKG_PACKAGE_URL="http://ipkg.nslu2-linux.org/feeds/optware/cs08q1armel/cross/unstable/wget-ssl_1.12-2_arm.ipk"
 
@@ -1325,7 +1325,7 @@ if [ "$RET_COND" == "3" ]; then
 	echo "Installing libfaac now:"
 	echo "downloading libfaac ..."
     echo "DOWNLOADING libfaac" > "$TMP_CPX"/libfaac.log 2>&1
-	wget http://downloads.sourceforge.net/faac/faac-1.28.tar.gz -O faac-1.28.tar.gz >> "$TMP_CPX"/libfaac.log 2>&1
+	wget http://downloads.sourceforge.net/faac/faac-1.28.tar.gz -O faac-1.28.tar.gz --no-check-certificate >> "$TMP_CPX"/libfaac.log 2>&1
 	if [ $? != 0 ]; then
 		echo "Could not download libfaac ..."
 		echo "Can not continue"
@@ -1392,7 +1392,7 @@ if [ "$RET_COND" == "9" ]; then
 	echo "Installing liblame(mp3) now:"
 	echo "downloading liblame..."
     	echo "DOWNLOADING liblame" > "$TMP_CPX"/lame.log 2>&1
-	wget http://downloads.sourceforge.net/lame/lame-3.99.5.tar.gz -O lame-3.99.5.tar.gz >> "$TMP_CPX"/lame.log 2>&1
+	wget http://downloads.sourceforge.net/lame/lame-3.99.5.tar.gz -O lame-3.99.5.tar.gz --no-check-certificate >> "$TMP_CPX"/lame.log 2>&1
 	if [ $? != 0 ]; then
 		echo "Could not download liblame ..."
 		echo "Can not continue"
